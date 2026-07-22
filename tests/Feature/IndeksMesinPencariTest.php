@@ -1,0 +1,219 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\News;
+use App\Models\RaceCategory;
+use App\Models\Registration;
+use App\Models\User;
+use Database\Seeders\RaceCategorySeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+/**
+ * Apa yang boleh dan tidak boleh masuk mesin pencari.
+ *
+ * Kegagalan di berkas ini berarti data orang bisa bocor ke hasil pencarian —
+ * jadi diperiksa dua-duanya: yang harus tertutup, dan yang harus tetap terbuka.
+ */
+class IndeksMesinPencariTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private function pengelola(): User
+    {
+        return User::create([
+            'name' => 'Dev', 'email' => 'dev@example.com',
+            'password' => 'rahasia12345', 'role' => User::ROLE_DEVELOPER,
+            'email_verified_at' => now(),
+        ]);
+    }
+
+    private function peserta(): User
+    {
+        return User::create([
+            'name' => 'Peserta', 'email' => 'peserta@example.com',
+            'password' => 'rahasia12345', 'role' => User::ROLE_PESERTA,
+            'email_verified_at' => now(),
+        ]);
+    }
+
+    /* ------------------------------------ Yang HARUS tertutup dari mesin pencari */
+
+    public function test_halaman_berisi_data_orang_menolak_diindeks(): void
+    {
+        $this->seed(RaceCategorySeeder::class);
+        $user = $this->peserta();
+
+        $daftar = Registration::create([
+            'registration_code' => 'GFR-5K-0001',
+            'user_id' => $user->id,
+            'race_category_id' => RaceCategory::where('slug', '5k')->first()->id,
+            'participant_name' => 'Rian Pelari', 'participant_email' => 'rian@example.com',
+            'participant_phone' => '0812', 'gender' => 'L',
+            'birth_date' => '1996-08-17', 'city' => 'Gorontalo', 'jersey_size' => 'M',
+            'emergency_name' => 'Ibu', 'emergency_phone' => '0813',
+            'amount' => 100000, 'status' => Registration::STATUS_CONFIRMED,
+            'bib_number' => '5001',
+        ]);
+
+        // Kolom hasil lomba sengaja tidak masuk $fillable — panitia menulisnya
+        // lewat forceFill di ResultController, supaya waktu finis tidak bisa
+        // ikut terpasang dari isian formulir mana pun.
+        $daftar->forceFill(['finish_seconds' => 1800])->save();
+
+        // Yang diperiksa adalah keadaan saat halamannya BENAR-BENAR memuat data —
+        // bukan saat tamu dialihkan ke halaman masuk.
+        foreach (["/dashboard", "/pendaftaran/{$daftar->id}", "/sertifikat/{$daftar->id}", '/profil'] as $jalur) {
+            $this->actingAs($user)
+                ->get($jalur)
+                ->assertOk()
+                ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+        }
+    }
+
+    public function test_seluruh_panel_panitia_menolak_diindeks(): void
+    {
+        $dev = $this->pengelola();
+        $this->seed(RaceCategorySeeder::class);
+
+        foreach (['/panitia', '/panitia/pendaftaran', '/panitia/laporan', '/panitia/pengaturan'] as $jalur) {
+            $this->actingAs($dev)
+                ->get($jalur)
+                ->assertOk()
+                ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+        }
+    }
+
+    public function test_halaman_masuk_dan_daftar_tidak_diindeks(): void
+    {
+        // Orang datang ke sini lewat tombol di halaman depan, bukan lewat Google.
+        foreach (['/masuk', '/daftar-akun', '/lupa-kata-sandi'] as $jalur) {
+            $this->get($jalur)
+                ->assertOk()
+                ->assertHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
+        }
+    }
+
+    public function test_tag_meta_ikut_menandai_halaman_privat(): void
+    {
+        // Sebagian perayap hanya membaca tag <meta>, bukan tajuk HTTP.
+        $this->get('/masuk')->assertSee('name="robots" content="noindex, nofollow, noarchive"', false);
+    }
+
+    /* -------------------------------- Yang HARUS tetap terbuka untuk mesin pencari */
+
+    public function test_halaman_umum_boleh_diindeks(): void
+    {
+        foreach (['/', '/berita', '/hasil'] as $jalur) {
+            $respon = $this->get($jalur);
+
+            $respon->assertOk();
+            $this->assertNull(
+                $respon->headers->get('X-Robots-Tag'),
+                "Halaman umum {$jalur} malah ditandai noindex."
+            );
+            $respon->assertSee('name="robots" content="index, follow', false);
+        }
+    }
+
+    /* --------------------------------------------------------- robots.txt */
+
+    public function test_robots_melarang_seluruh_jalur_berisi_data_orang(): void
+    {
+        $isi = $this->get('/robots.txt')
+            ->assertOk()
+            ->assertHeader('Content-Type', 'text/plain; charset=utf-8')
+            ->getContent();
+
+        foreach (['/panitia', '/dashboard', '/pendaftaran', '/sertifikat', '/bukti-bayar', '/profil'] as $jalur) {
+            $this->assertStringContainsString("Disallow: {$jalur}", $isi);
+        }
+    }
+
+    public function test_robots_menunjuk_sitemap_dan_membuka_halaman_umum(): void
+    {
+        $isi = $this->get('/robots.txt')->getContent();
+
+        $this->assertStringContainsString('Sitemap: '.url('/sitemap.xml'), $isi);
+        $this->assertStringContainsString('Allow: /berita', $isi);
+        $this->assertStringContainsString('Allow: /hasil', $isi);
+    }
+
+    public function test_robots_tidak_lagi_mengizinkan_semuanya(): void
+    {
+        // Isi bawaan Laravel adalah "Disallow:" tanpa nilai — yang justru berarti
+        // MENGIZINKAN semuanya, termasuk panel panitia dan sertifikat peserta.
+        $this->assertStringNotContainsString(
+            "Disallow:\n",
+            $this->get('/robots.txt')->getContent()
+        );
+    }
+
+    /* --------------------------------------------------------- sitemap.xml */
+
+    public function test_sitemap_memuat_halaman_umum_saja(): void
+    {
+        $isi = $this->get('/sitemap.xml')
+            ->assertOk()
+            ->assertHeader('Content-Type', 'application/xml; charset=utf-8')
+            ->getContent();
+
+        $this->assertStringContainsString('<loc>'.url('/').'</loc>', $isi);
+        $this->assertStringContainsString('<loc>'.url('/berita').'</loc>', $isi);
+
+        foreach (['/panitia', '/dashboard', '/sertifikat', '/bukti-bayar'] as $jalur) {
+            $this->assertStringNotContainsString($jalur, $isi);
+        }
+    }
+
+    public function test_sitemap_memuat_berita_yang_sudah_tayang_saja(): void
+    {
+        $penulis = $this->pengelola();
+
+        News::create([
+            'title' => 'Berita Tayang', 'slug' => 'berita-tayang', 'body' => 'Isi.',
+            'author_id' => $penulis->id, 'is_published' => true, 'published_at' => now()->subDay(),
+        ]);
+        News::create([
+            'title' => 'Masih Draf', 'slug' => 'masih-draf', 'body' => 'Isi.',
+            'author_id' => $penulis->id, 'is_published' => false,
+        ]);
+
+        $isi = $this->get('/sitemap.xml')->getContent();
+
+        $this->assertStringContainsString('berita-tayang', $isi);
+        // Draf belum boleh diketahui siapa pun, apalagi diantre untuk dirayapi.
+        $this->assertStringNotContainsString('masih-draf', $isi);
+    }
+
+    /* --------------------------------------------------- Pratinjau saat dibagikan */
+
+    public function test_beranda_membawa_open_graph_untuk_berbagi_tautan(): void
+    {
+        // Acara seperti ini menyebar lewat WhatsApp, bukan mesin pencari.
+        $respon = $this->get('/');
+
+        $respon->assertSee('property="og:title"', false);
+        $respon->assertSee('property="og:description"', false);
+        $respon->assertSee('property="og:image"', false);
+        $respon->assertSee(asset('images/hero-runners.jpg'), false);
+    }
+
+    public function test_beranda_membawa_data_terstruktur_acara(): void
+    {
+        $respon = $this->get('/');
+
+        $respon->assertSee('application/ld+json', false);
+        $respon->assertSee('SportsEvent', false);
+        $respon->assertSee('Kabupaten Gorontalo', false);
+    }
+
+    public function test_data_terstruktur_hanya_di_beranda(): void
+    {
+        // Kalau dipasang di tiap halaman, Google membacanya sebagai banyak acara
+        // berbeda dengan nama yang sama.
+        $this->get('/berita')->assertDontSee('application/ld+json', false);
+        $this->get('/hasil')->assertDontSee('application/ld+json', false);
+    }
+}

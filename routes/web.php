@@ -28,10 +28,15 @@ use App\Http\Controllers\PaymentProofController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\ResultPublicController;
+use App\Http\Controllers\SeoController;
 use App\Http\Controllers\SlotTransferController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', LandingController::class)->name('home');
+
+/* ------------------------------------------------------ Mesin pencari */
+Route::get('robots.txt', [SeoController::class, 'robots'])->name('robots');
+Route::get('sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 
 /* --------------------------------------------------------- Hasil lomba */
 Route::get('hasil', [ResultPublicController::class, 'index'])->name('results.index');
@@ -40,7 +45,7 @@ Route::get('hasil', [ResultPublicController::class, 'index'])->name('results.ind
 Route::get('berita', [NewsController::class, 'index'])->name('news.index');
 Route::get('berita/{news}', [NewsController::class, 'show'])->name('news.show');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['jangan-indeks', 'auth'])->group(function () {
     // Dibatasi agar tidak bisa dibanjiri komentar.
     Route::post('berita/{news}/komentar', [NewsController::class, 'comment'])
         ->middleware('throttle:10,1')
@@ -49,7 +54,9 @@ Route::middleware('auth')->group(function () {
 });
 
 /* ---------------------------------------------------------------- Tamu */
-Route::middleware('guest')->group(function () {
+// Halaman masuk & daftar tidak perlu masuk hasil pencarian — orang datang ke
+// sini lewat tombol di halaman depan, bukan lewat Google.
+Route::middleware(['jangan-indeks', 'guest'])->group(function () {
     Route::get('masuk', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('masuk', [AuthenticatedSessionController::class, 'store']);
 
@@ -68,7 +75,9 @@ Route::middleware('guest')->group(function () {
 });
 
 /* -------------------------------------------------------- Sudah masuk */
-Route::middleware('auth')->group(function () {
+// Seluruh isinya data orang: e-tiket, nomor BIB, bukti bayar, sertifikat.
+// Tidak satu pun boleh sampai ke mesin pencari.
+Route::middleware(['jangan-indeks', 'auth'])->group(function () {
     Route::post('keluar', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
     Route::get('dashboard', [RegistrationController::class, 'index'])->name('dashboard');
@@ -109,7 +118,7 @@ Route::middleware('auth')->group(function () {
 });
 
 /* ------------------------------------------------------------- Panitia */
-Route::middleware(['auth', 'panitia'])->prefix('panitia')->name('panitia.')->group(function () {
+Route::middleware(['jangan-indeks', 'auth', 'panitia'])->prefix('panitia')->name('panitia.')->group(function () {
     Route::get('/', PanitiaDashboard::class)->name('dashboard');
 
     Route::get('pendaftaran', [PanitiaRegistrations::class, 'index'])->name('registrations.index');

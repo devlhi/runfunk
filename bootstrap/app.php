@@ -4,6 +4,7 @@ use App\Http\Middleware\EnsureDeveloper;
 use App\Http\Middleware\EnsureEmailVerified;
 use App\Http\Middleware\EnsurePanitia;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\NoIndex;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -34,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'panitia' => EnsurePanitia::class,
             'developer' => EnsureDeveloper::class,
             'email.terverifikasi' => EnsureEmailVerified::class,
+            'jangan-indeks' => NoIndex::class,
         ]);
 
         // Panitia yang sudah masuk lalu membuka halaman tamu diarahkan ke panelnya

@@ -429,6 +429,17 @@ kartu yang hilang tanpa menghapus akun orangnya.
 **Bukti bayar dan pas foto disimpan di disk privat**, bukan folder publik, dan disajikan
 lewat rute berautentikasi. Keduanya **tidak ikut di repositori ini**.
 
+**Halaman berisi data orang tertutup dari mesin pencari.** Dashboard peserta, e-tiket,
+sertifikat, bukti bayar, dan seluruh panel panitia menjawab dengan tajuk
+`X-Robots-Tag: noindex` sekaligus tag `<meta name="robots">`. Ditandai lewat middleware
+di grup rutenya, jadi halaman baru otomatis ikut terlindungi tanpa harus diingat.
+
+`robots.txt` dan `sitemap.xml` dilayani lewat rute, bukan berkas statis — alamat di
+dalamnya mengikuti `APP_URL`, jadi tidak perlu disunting saat pindah domain.
+
+> Sitemap hanya memuat beranda, daftar berita, papan hasil, dan berita yang **sudah
+> tayang**. Draf berita tidak ikut.
+
 ---
 
 ## Perawatan
@@ -500,8 +511,9 @@ latar ikut dicetak, tapi sebagian peramban tetap butuh centang itu.
 php artisan test
 ```
 
-**328 pengujian** mencakup alur pendaftaran, pembayaran, verifikasi email, keaslian kode
-QR, kartu panitia, hak akses tiap peran, dan kebocoran data pribadi.
+**341 pengujian** mencakup alur pendaftaran, pembayaran, verifikasi email, keaslian kode
+QR, kartu panitia, hak akses tiap peran, kebocoran data pribadi, dan halaman mana saja
+yang boleh masuk mesin pencari.
 
 Pengujian memakai basis data terpisah — buat `funrun_test` lebih dulu, atau sesuaikan
 `phpunit.xml`.
