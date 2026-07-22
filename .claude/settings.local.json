@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(php -v)",
+      "PowerShell(composer -V)",
+      "PowerShell(node -v)",
+      "PowerShell(npm -v)"
+    ]
+  }
+}
