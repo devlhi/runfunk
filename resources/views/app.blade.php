@@ -9,10 +9,18 @@
         $namaAcara = Setting::ambil('event_name') ?: 'Gong Fun Run 2026';
         $lokasi = Setting::ambil('location') ?: config('funrun.location');
         $tanggalMentah = Setting::ambil('event_date') ?: config('funrun.event_date');
+        $googleVerif = Setting::ambil('google_verification') ?: '';
     } catch (\Throwable) {
         $namaAcara = 'Gong Fun Run 2026';
         $lokasi = config('funrun.location');
         $tanggalMentah = config('funrun.event_date');
+        $googleVerif = '';
+    }
+
+    // Developer boleh menempel kode saja atau seluruh tag <meta> dari Google —
+    // di sini diambil kodenya saja supaya tetap benar di kedua kasus.
+    if ($googleVerif && preg_match('/content=["\']([^"\']+)["\']/', $googleVerif, $m)) {
+        $googleVerif = $m[1];
     }
 
     $tanggal = Carbon::parse($tanggalMentah);
@@ -76,6 +84,10 @@
     @else
         <meta name="robots" content="index, follow, max-image-preview:large">
         <link rel="canonical" href="{{ url()->current() }}">
+    @endif
+
+    @if ($googleVerif)
+        <meta name="google-site-verification" content="{{ $googleVerif }}">
     @endif
 
     {{-- Deskripsi yang muncul di bawah judul pada hasil pencarian. --}}

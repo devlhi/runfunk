@@ -53,6 +53,7 @@ class SettingController extends Controller
             'payment_whatsapp' => ['required', 'string', 'max:300'],
             'payment_deadline_hours' => ['required', 'integer', 'min:1', 'max:720'],
             'registration_open' => ['required', 'boolean'],
+            'google_verification' => ['nullable', 'string', 'max:255'],
             'chairman_name' => ['nullable', 'string', 'max:120'],
             'chairman_title' => ['nullable', 'string', 'max:120'],
             'chairman_message' => ['nullable', 'string', 'max:2000'],

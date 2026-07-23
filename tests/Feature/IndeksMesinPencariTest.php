@@ -216,4 +216,34 @@ class IndeksMesinPencariTest extends TestCase
         $this->get('/berita')->assertDontSee('application/ld+json', false);
         $this->get('/hasil')->assertDontSee('application/ld+json', false);
     }
+
+    /* ------------------------------------------ Verifikasi Search Console */
+
+    public function test_kode_verifikasi_google_muncul_di_kepala_halaman(): void
+    {
+        \App\Models\Setting::simpan(['google_verification' => 'kode-uji-123']);
+
+        $this->get('/')->assertSee(
+            '<meta name="google-site-verification" content="kode-uji-123">',
+            false
+        );
+    }
+
+    public function test_seluruh_tag_meta_dari_google_diambil_kodenya_saja(): void
+    {
+        // Developer sering menempel seluruh tag dari Search Console, bukan kodenya
+        // saja. Hasilnya harus tetap satu tag yang benar, bukan tag di dalam tag.
+        \App\Models\Setting::simpan([
+            'google_verification' => '<meta name="google-site-verification" content="abc123xyz" />',
+        ]);
+
+        $this->get('/')
+            ->assertSee('content="abc123xyz"', false)
+            ->assertDontSee('content="<meta', false);
+    }
+
+    public function test_tanpa_kode_tidak_ada_tag_verifikasi(): void
+    {
+        $this->get('/')->assertDontSee('google-site-verification', false);
+    }
 }

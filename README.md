@@ -19,6 +19,7 @@ start & finis di Lapangan Tuladenggi, Kabupaten Gorontalo. Diselenggarakan oleh
 - [Daftar Isian `.env`](#daftar-isian-env)
 - [Akun Bawaan](#akun-bawaan)
 - [Catatan Teknis](#catatan-teknis)
+- [SEO & Mesin Pencari](#seo--mesin-pencari)
 - [Perawatan](#perawatan)
 - [Masalah yang Sering Terjadi](#masalah-yang-sering-terjadi)
 
@@ -439,6 +440,78 @@ dalamnya mengikuti `APP_URL`, jadi tidak perlu disunting saat pindah domain.
 
 > Sitemap hanya memuat beranda, daftar berita, papan hasil, dan berita yang **sudah
 > tayang**. Draf berita tidak ikut.
+
+---
+
+## SEO & Mesin Pencari
+
+Bagian ini untuk yang mengurus agar acaranya mudah ditemukan. Sisi teknisnya sudah
+ditanam di kode — yang di bawah ini menjelaskan apa yang sudah ada, dan apa yang **hanya
+bisa dilakukan Anda** karena butuh akun pihak luar.
+
+### Yang Sudah Otomatis
+
+Tidak perlu disentuh — semuanya mengikuti `APP_URL` dan pengaturan acara:
+
+| Bagian | Keterangan |
+| --- | --- |
+| `robots.txt` | `https://domainanda.id/robots.txt` — memblokir panel & data peserta, menunjuk sitemap |
+| `sitemap.xml` | `https://domainanda.id/sitemap.xml` — beranda, berita, hasil, tiap berita tayang |
+| Meta description | Diambil dari nama & tanggal acara di Pengaturan Acara |
+| Open Graph | Pratinjau bergambar saat tautan dibagi di WhatsApp/Facebook/Telegram |
+| Data terstruktur | Kartu acara `SportsEvent` di beranda — tanggal & lokasi bisa muncul di Google |
+| `noindex` | Dashboard, e-tiket, sertifikat, bukti bayar, panel panitia — tertutup dari pencarian |
+
+> **Berita adalah mesin SEO situs ini.** Beranda cuma satu halaman; tiap berita yang
+> panitia terbitkan jadi satu alamat baru yang bisa dicari. Rutin menulis kabar persiapan
+> — "Pengambilan race pack H-2", "Rute 10K resmi" — jauh lebih ampuh menaikkan posisi di
+> Google daripada trik teknis apa pun.
+
+### Yang Harus Anda Lakukan Sendiri
+
+Butuh akun Google, jadi tidak bisa ditanam di kode:
+
+**1. Daftarkan ke Google Search Console** — inilah langkah paling menentukan.
+
+1. Buka <https://search.google.com/search-console> → **Add property** → **URL prefix** →
+   masukkan `https://domainanda.id`
+2. Verifikasi kepemilikan. Cara termudah: pilih **HTML tag**, salin yang diberikan Google
+   (`<meta name="google-site-verification" content="xxxx...">`), lalu tempel di
+   **Pengaturan Acara → Mesin Pencari (SEO) → Kode Verifikasi Google** dan simpan. Boleh
+   tempel seluruh tag atau kodenya saja — keduanya diterima. Kembali ke Search Console,
+   klik **Verify**.
+3. Setelah terverifikasi: menu **Sitemaps** → ketik `sitemap.xml` → **Submit**
+4. Tunggu beberapa hari; Google mulai merayapi dan situsnya muncul di hasil pencarian
+
+**2. Uji pratinjau tautan** sebelum menyebarkannya:
+
+- Facebook/WhatsApp: <https://developers.facebook.com/tools/debug/> — tempel URL situs,
+  pastikan gambar pelari dan judulnya muncul. Kalau salah, klik **Scrape Again**.
+- Kartu acara Google: <https://search.google.com/test/rich-results> — tempel URL beranda,
+  pastikan `SportsEvent` terbaca tanpa galat.
+
+**3. Google Bisnisku (opsional tapi berdampak)** — kalau IKA punya alamat tetap, daftarkan
+di <https://business.google.com>. Pencarian "fun run gorontalo" jadi memunculkan kartu
+lokasi berikut tautan pendaftaran.
+
+> **Alternatif verifikasi.** Kalau lebih suka tidak lewat panel, Search Console juga
+> menerima **DNS record** (tambah TXT di pengaturan domain) atau unggah **berkas HTML**
+> dari Google ke folder `public/`. Ketiganya sah — pilih yang paling mudah.
+
+### Memeriksa Sendiri
+
+Setelah situs live, pastikan semuanya benar:
+
+```bash
+curl -s https://domainanda.id/robots.txt      # harus berisi banyak baris Disallow
+curl -s https://domainanda.id/sitemap.xml     # harus <urlset> berisi beranda & berita
+
+# Halaman peserta HARUS menolak diindeks:
+curl -sI https://domainanda.id/dashboard | grep -i x-robots-tag
+```
+
+Kalau `robots.txt` cuma berisi `Disallow:` satu baris tanpa nilai, berarti masih memakai
+berkas statis lama — hapus `public/robots.txt` supaya rutenya yang dipakai.
 
 ---
 

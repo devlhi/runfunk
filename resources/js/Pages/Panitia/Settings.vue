@@ -174,6 +174,28 @@ const contohMail = {
             </div>
 
             <div class="panel" style="margin-top:20px">
+                <h2 class="panel-title">Mesin Pencari (SEO)</h2>
+                <p class="panel-sub">
+                    Kode verifikasi dari Google Search Console — supaya situs bisa didaftarkan
+                    ke Google dan muncul di hasil pencarian.
+                </p>
+
+                <div class="field" style="margin-bottom:0">
+                    <label for="google_verification">Kode Verifikasi Google</label>
+                    <input
+                        id="google_verification" v-model="form.google_verification" type="text" class="input"
+                        :class="{ 'has-error': form.errors.google_verification }"
+                        placeholder="Tempel kode dari metode “HTML tag” Search Console"
+                    />
+                    <p v-if="form.errors.google_verification" class="error">{{ form.errors.google_verification }}</p>
+                    <p v-else class="help">
+                        Boleh isi kodenya saja atau seluruh tag <span class="mono">&lt;meta&gt;</span> —
+                        keduanya diterima. Kosongkan kalau belum mendaftar.
+                    </p>
+                </div>
+            </div>
+
+            <div class="panel" style="margin-top:20px">
                 <h2 class="panel-title">Gateway WhatsApp (mpedia)</h2>
                 <p class="panel-sub">
                     Dipakai untuk mengirim pengumuman ke nomor WhatsApp peserta.

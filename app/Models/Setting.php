@@ -35,6 +35,10 @@ class Setting extends Model
             'payment_deadline_hours' => ['label' => 'Batas Waktu Bayar (jam)', 'default' => config('funrun.payment_deadline_hours'), 'type' => 'number'],
             'registration_open' => ['label' => 'Pendaftaran Dibuka', 'default' => '1', 'type' => 'boolean'],
 
+            // Kode verifikasi Google Search Console. Ditempel apa adanya dari
+            // metode "HTML tag"; boleh isi kode saja atau seluruh tag <meta>.
+            'google_verification' => ['label' => 'Kode Verifikasi Google', 'default' => '', 'type' => 'text'],
+
             // Sambutan di landing page. Namanya sengaja kosong dari awal: lebih
             // baik hanya menampilkan jabatan daripada memasang nama orang yang
             // salah di halaman depan.
