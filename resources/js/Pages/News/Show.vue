@@ -54,6 +54,7 @@ function hapus(id) {
 
     <SiteNav />
 
+    <main>
     <article class="artikel">
         <div class="wrap wrap-narrow">
             <FlashMessage />
@@ -149,6 +150,7 @@ function hapus(id) {
             </section>
         </div>
     </article>
+    </main>
 
     <SiteFooter />
 </template>

@@ -139,6 +139,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    {{-- Prioritaskan foto hero: itulah elemen LCP di beranda. Sebagai
+         background-image CSS, ia baru ditemukan browser SETELAH CSS diunduh &
+         diurai — itu yang membuat LCP lambat. Preload + fetchpriority=high
+         membuatnya ditemukan langsung di HTML awal dan diunduh paling dulu. --}}
+    @if (request()->path() === '/')
+        <link rel="preload" as="image" href="{{ asset('images/hero-runners.jpg') }}" fetchpriority="high">
+    @endif
+
     <title inertia>{{ $judulHalaman }}</title>
 
     {{-- Favicon: logo IKA sebagai favicon.ico (memuat 16/32/48/64 px). ?v=2

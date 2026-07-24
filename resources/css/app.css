@@ -310,7 +310,10 @@ table.data .muted { color: var(--ink-soft); font-size: .84rem; }
 .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px; padding-bottom: 40px; border-bottom: 1.5px solid rgba(255, 255, 255, .14); }
 .foot-brand .brand { color: var(--paper); margin-bottom: 14px; }
 .foot-brand p { color: #A79FB4; font-size: .92rem; max-width: 34ch; }
-.foot-col h4 { font-family: 'Space Mono'; font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--marigold); margin-bottom: 16px; }
+/* Kolom footer memakai <h2> (bukan <h4>) supaya urutan judul tidak melompati
+   level — di beranda judul terakhir sebelum footer adalah <h2>. Tampilannya
+   tetap label mono kecil lewat penataan di bawah ini. */
+.foot-col h2 { font-family: 'Space Mono'; font-size: .74rem; font-weight: 700; line-height: 1.3; letter-spacing: .12em; text-transform: uppercase; color: var(--marigold); margin-bottom: 16px; }
 .foot-col a { display: block; color: #D7D0E0; font-size: .94rem; margin-bottom: 10px; }
 .foot-col a:hover { color: var(--flame); }
 .foot-bot { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-top: 26px; flex-wrap: wrap; font-family: 'Space Mono'; font-size: .76rem; color: #8C849A; }

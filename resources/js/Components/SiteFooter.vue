@@ -27,7 +27,7 @@ defineProps({
                 </div>
 
                 <div class="foot-col">
-                    <h4>Acara</h4>
+                    <h2>Acara</h2>
                     <template v-if="showAnchors">
                         <a href="#info">Info Acara</a>
                         <a href="#kategori">Kategori &amp; Biaya</a>
@@ -43,7 +43,7 @@ defineProps({
                 </div>
 
                 <div class="foot-col">
-                    <h4>Kontak</h4>
+                    <h2>Kontak</h2>
                     <a href="mailto:halo@gongfunrun.id">halo@gongfunrun.id</a>
                     <a href="https://wa.me/6281200000000" target="_blank" rel="noopener">WhatsApp Panitia</a>
                     <a href="https://instagram.com/gongfunrun" target="_blank" rel="noopener">Instagram: @gongfunrun</a>

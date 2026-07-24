@@ -145,6 +145,7 @@ onBeforeUnmount(() => {
 
     <SiteNav show-anchors />
 
+    <main>
     <header class="hero" id="top">
         <!-- Latar hero: foto pelari di separuh kanan + gradient yang bergerak pelan. -->
         <div class="hero-photo" aria-hidden="true"></div>
@@ -621,6 +622,7 @@ onBeforeUnmount(() => {
             <Link :href="primaryCta.href" class="btn">Daftar Gong Funrun 2026 →</Link>
         </div>
     </section>
+    </main>
 
     <SiteFooter show-anchors />
 </template>
