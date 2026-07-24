@@ -938,7 +938,12 @@ onBeforeUnmount(() => {
 }
 .merch-card:hover { transform: translate(-3px, -3px); box-shadow: 9px 9px 0 var(--ink); }
 .merch-card img {
-  display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: contain;
+  /* height:auto WAJIB: atribut height="768" di HTML (dipasang untuk CLS)
+     berlaku sebagai tinggi tetap kalau CSS tidak menimpanya — akibatnya
+     aspect-ratio diabaikan dan kartunya memanjang setinggi 768px dengan
+     gambar mungil di tengah. Dengan height:auto, aspect-ratio 16/10 yang
+     mengatur tinggi. */
+  display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: contain;
   background: #fff; border-bottom: 2.5px solid var(--ink);
 }
 .merch-tag {
