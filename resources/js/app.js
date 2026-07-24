@@ -4,6 +4,15 @@ import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
+// Aktifkan font Google yang dimuat sebagai media="print" (non-blocking) di
+// app.blade.php. Pengalihan dilakukan di sini, bukan lewat atribut onload
+// sebaris, karena CSP situs (script-src 'self') memblokir handler sebaris —
+// tanpa ini font tetap "print" dan seluruh situs tampil dengan font cadangan.
+// Dijalankan lebih dulu supaya font berganti secepat mungkin.
+document.querySelectorAll('link[data-font][media="print"]').forEach((l) => {
+    l.media = 'all';
+});
+
 const appName = import.meta.env.VITE_APP_NAME || 'Gong Funrun 2026';
 
 createInertiaApp({

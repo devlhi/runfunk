@@ -184,12 +184,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     {{-- Font dimuat TANPA memblokir render: dipasang sebagai media=print (browser
-         mengunduhnya di jalur non-kritis) lalu dialihkan ke "all" begitu selesai.
-         Sebelumnya <link rel=stylesheet> biasa menahan render ±750 md dan menjadi
-         rantai kritis terpanjang. display=swap membuat teks langsung tampil
-         dengan font cadangan dulu; <noscript> menjaga font tetap termuat bila
+         mengunduhnya di jalur non-kritis) lalu dialihkan ke "all" oleh app.js.
+         CATATAN: pengalihan TIDAK boleh lewat atribut onload sebaris — CSP situs
+         (script-src 'self', lihat SecurityHeaders) memblokir handler sebaris,
+         sehingga font tidak akan pernah tampil. app.js dilayani dari origin
+         sendiri, jadi diizinkan CSP. <noscript> menjaga font tetap termuat bila
          JavaScript dimatikan. --}}
-    <link rel="stylesheet" media="print" onload="this.media='all'"
+    <link rel="stylesheet" media="print" data-font
           href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Big+Shoulders+Display:wght@600;700;800;900&family=Space+Mono:wght@400;700&display=swap">
     <noscript>
         <link rel="stylesheet"
