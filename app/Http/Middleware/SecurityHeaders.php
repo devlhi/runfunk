@@ -40,13 +40,18 @@ class SecurityHeaders
      */
     private function csp(): string
     {
+        // Cloudflare menyuntikkan beacon analitik (Web Analytics / Browser
+        // Insights) di depan situs. Diizinkan di sini supaya tidak diblokir CSP
+        // (yang memunculkan error konsol). Kalau tak butuh analitik itu,
+        // matikan "Browser Insights" di dashboard Cloudflare dan hapus dua
+        // pengecualian di bawah — CSP kembali murni 'self'.
         $aturan = [
             "default-src 'self'",
-            "script-src 'self'",
+            "script-src 'self' https://static.cloudflareinsights.com",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
             "font-src 'self' https://fonts.gstatic.com data:",
             "img-src 'self' data:",
-            "connect-src 'self'",
+            "connect-src 'self' https://cloudflareinsights.com",
             "frame-src 'self'",
             "frame-ancestors 'self'",
             "form-action 'self'",

@@ -105,7 +105,10 @@ img, svg { max-width: 100%; }
 /* --------------------------------------------------------- Section head */
 section { padding: 90px 0; }
 .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 50px; flex-wrap: wrap; }
-.sec-tag { font-family: 'Space Mono'; font-size: .76rem; letter-spacing: .14em; text-transform: uppercase; color: var(--flame); display: flex; align-items: center; gap: .55rem; margin-bottom: 14px; }
+/* Warna teksnya lebih tua dari --flame (#FF4A1C). Flame di atas latar terang
+   hanya ~3,4:1 — di bawah ambang WCAG 4,5:1 untuk teks kecil. #B92D0B lolos
+   ~5,7:1 dan masih terbaca sebagai merah-jingga merek. */
+.sec-tag { font-family: 'Space Mono'; font-size: .76rem; letter-spacing: .14em; text-transform: uppercase; color: #B92D0B; display: flex; align-items: center; gap: .55rem; margin-bottom: 14px; }
 .sec-tag .lane { font-weight: 700; background: var(--ink); color: var(--paper); width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: .75rem; flex: none; }
 .sec-head h2 { font-size: clamp(2.4rem, 5.5vw, 3.9rem); font-weight: 800; max-width: 16ch; }
 .sec-head p { max-width: 38ch; color: var(--ink-soft); font-size: 1.02rem; }
