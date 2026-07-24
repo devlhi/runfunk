@@ -243,6 +243,10 @@ defineProps({
     .auth-wrap { padding: 32px 16px 44px; }
     .auth-card { padding: 26px 20px 24px; border-radius: 18px; box-shadow: 6px 6px 0 var(--flame); }
     .auth-facts { display: none; }
+    /* Baris fakta yang biasanya memberi jarak disembunyikan di mobile, jadi
+       baris tanggal perlu jarak atasnya sendiri — kalau tidak, ia menempel ke
+       kartu form (termasuk bayangan flame-nya) dan terlihat sesak. */
+    .auth-meta { margin-top: 34px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
