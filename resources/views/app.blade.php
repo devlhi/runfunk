@@ -114,14 +114,9 @@
 
     <title inertia>{{ config('app.name', 'Gong Fun Run 2026') }}</title>
 
-    {{-- Favicon merek "G" (ubin toska). favicon.ico memuat 16/32/48 px; PNG dan
-         apple-touch untuk peramban modern; manifest untuk "tambah ke layar
-         utama". ?v=1 memaksa peramban melewati favicon.ico lama yang kosong. --}}
-    <link rel="icon" href="{{ asset('favicon.ico') }}?v=1" sizes="any">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}?v=1">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}?v=1">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=1">
-    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+    {{-- Favicon: logo IKA sebagai favicon.ico (memuat 16/32/48/64 px). ?v=2
+         memaksa peramban memuat ulang, melewati ikon lama yang ter-cache. --}}
+    <link rel="icon" href="{{ asset('favicon.ico') }}?v=2" sizes="any">
 
     @if ($privat)
         {{-- Halaman ini berisi data orang. Selain tajuk X-Robots-Tag, ditandai
