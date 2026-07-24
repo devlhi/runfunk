@@ -41,8 +41,13 @@ defineProps({
                 <li><b>Race pack</b> Jersey &amp; medali</li>
             </ul>
 
+            <!-- Tiap bagian jadi satu unit utuh. Kalau turun baris di layar
+                 sempit, "Lapangan Tuladenggi, Gorontalo" ikut turun bersama —
+                 bukan menyisakan "Gorontalo" sendirian di baris baru. -->
             <p class="auth-meta">
-                Sabtu, 31 Oktober 2026 · Flag off 06.00 WITA · Lapangan Tuladenggi, Gorontalo
+                <span>Sabtu, 31 Oktober 2026</span>
+                <span>Flag off 06.00 WITA</span>
+                <span>Lapangan Tuladenggi, Gorontalo</span>
             </p>
 
             <Link href="/" class="auth-back">← Kembali ke halaman utama</Link>
@@ -80,8 +85,12 @@ defineProps({
     z-index: 0;
     pointer-events: none;
     background-image: url('/images/hero-runners.jpg');
-    background-size: auto 150%;
-    background-position: 58% 78%;
+    /* Fotonya kini potret (pelari berjersey resmi), jadi cover + posisi atas —
+       setelan lama (auto 150%, 58% 78%) disetel untuk foto lanskap yang sudah
+       diganti, dan akan menampilkan potongan yang salah. */
+    background-size: cover;
+    background-position: 50% 22%;
+    background-repeat: no-repeat;
     /* Di latar terang, foto harus jauh lebih redup daripada di hero yang gelap
        supaya kartu formulir tetap jadi titik fokus. */
     opacity: .3;
@@ -185,16 +194,26 @@ defineProps({
     padding: .2rem .6rem;
 }
 
+/* Baris ini hampir selalu turun 2–3 baris di ponsel, jadi tiap frasa dijadikan
+   unit utuh yang membungkus sendiri — "Lapangan Tuladenggi, Gorontalo" tak
+   pernah pecah menyisakan "Gorontalo" sendirian. Tanpa titik pemisah: saat
+   bertumpuk, titik di ujung baris justru terbaca menggantung. */
 .auth-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    gap: .35rem 1rem;
     font-family: 'Space Mono', monospace;
     font-size: .68rem;
     letter-spacing: .06em;
     text-transform: uppercase;
     color: var(--ink-soft);
-    max-width: 40ch;
-    line-height: 1.7;
+    max-width: 44ch;
+    line-height: 1.55;
     margin-bottom: 20px;
 }
+.auth-meta span { white-space: nowrap; }
 
 .auth-back {
     font-family: 'Space Mono', monospace;

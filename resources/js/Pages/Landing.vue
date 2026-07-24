@@ -156,7 +156,16 @@ onBeforeUnmount(() => {
                     </span>
                 </div>
 
-                <div class="eyebrow"><b></b>Sabtu, 31 Oktober 2026 · Lapangan Tuladenggi, Gorontalo</div>
+                <!-- Tanggal dan lokasi dipecah dua span: di layar sempit keduanya
+                     turun baris pada titik yang disengaja, bukan patah di tengah
+                     nama tempat ("LAPANGAN / TULADENGGI"). -->
+                <div class="eyebrow">
+                    <b></b>
+                    <span class="eyebrow-txt">
+                        <span>Sabtu, 31 Oktober 2026</span>
+                        <span class="eyebrow-loc">Lapangan Tuladenggi, Gorontalo</span>
+                    </span>
+                </div>
                 <h1>
                     <span class="l1">Gong</span><br />
                     <span class="l2">Fun Run</span><br />
@@ -625,16 +634,19 @@ onBeforeUnmount(() => {
 
 /* Foto hanya mengisi separuh kanan hero, lalu memudar ke kiri. Sisi kiri
    dibiarkan gelap polos supaya judul besar dan paragrafnya tetap tajam
-   terbaca — kalau foto dipasang penuh, teks putih di atasnya jadi ramai. */
+   terbaca — kalau foto dipasang penuh, teks putih di atasnya jadi ramai.
+
+   Fotonya pelari berjersey resmi acara (potret 688x1384) — menggantikan foto
+   kerumunan maraton luar yang dua kali bermasalah: crop close-up kaki yang
+   dikeluhkan terlalu terbuka, dan nomor dada bersponsor acara lain di bagian
+   atasnya. Posisi 50% 18% menjaga kepala tetap di dalam bingkai. */
 .hero-photo {
   position: absolute; inset: 0 0 0 auto; width: 56%; z-index: 0; pointer-events: none;
   background-image: url('/images/hero-runners.jpg');
-  /* Sengaja diperbesar dan digeser ke bawah supaya yang tampil bagian kaki
-     dan jalan — bagian atas foto memuat nomor dada bersponsor acara lain,
-     yang tidak pantas muncul di halaman yang punya sponsor sendiri. */
-  background-size: auto 150%;
-  background-position: 58% 78%;
-  opacity: .62;
+  background-size: cover;
+  background-position: 50% 18%;
+  background-repeat: no-repeat;
+  opacity: .58;
   filter: saturate(.85) contrast(1.05);
   -webkit-mask-image: linear-gradient(to left, #000 0%, rgba(0, 0, 0, .82) 42%, transparent 92%);
   mask-image: linear-gradient(to left, #000 0%, rgba(0, 0, 0, .82) 42%, transparent 92%);
@@ -673,8 +685,11 @@ onBeforeUnmount(() => {
 .hero-org span { display: flex; flex-direction: column; line-height: 1.25; font-size: .78rem; color: #CFC7DA; max-width: 32ch; }
 .hero-org b { font-family: 'Space Mono'; font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: var(--marigold); }
 .hero-in { position: relative; z-index: 2; display: grid; grid-template-columns: 1.15fr .85fr; gap: 52px; align-items: center; }
-.eyebrow { display: inline-flex; align-items: center; gap: .6rem; font-family: 'Space Mono'; font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: var(--marigold); margin-bottom: 22px; }
-.eyebrow b { width: 8px; height: 8px; border-radius: 50%; background: var(--marigold); display: inline-block; }
+.eyebrow { display: inline-flex; align-items: baseline; gap: .6rem; font-family: 'Space Mono'; font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: var(--marigold); margin-bottom: 22px; }
+.eyebrow b { width: 8px; height: 8px; border-radius: 50%; background: var(--marigold); display: inline-block; flex: none; }
+.eyebrow-txt { display: flex; flex-wrap: wrap; column-gap: .55rem; row-gap: .4rem; }
+/* Titik pemisah hanya saat keduanya masih satu baris. */
+.eyebrow-loc::before { content: '·'; margin-right: .55rem; }
 .hero h1 { font-size: clamp(3.6rem, 10vw, 7.2rem); font-weight: 900; }
 .hero h1 .l2 { color: var(--flame); }
 .hero h1 .l3 { -webkit-text-stroke: 2px var(--paper); color: transparent; }
@@ -778,21 +793,28 @@ onBeforeUnmount(() => {
 .route-list .place b { display: block; font-family: 'Big Shoulders Display'; font-weight: 700; font-size: 1.15rem; letter-spacing: .01em; }
 .route-list .place span { font-size: .86rem; color: var(--ink-soft); }
 .map-card { background: var(--ink); border: 2.5px solid var(--ink); border-radius: 20px; padding: 14px; box-shadow: 8px 8px 0 var(--cobalt); }
-.map-frame { position: relative; }
+.map-frame { position: relative; container-type: inline-size; }
 .map-card img { display: block; width: 100%; height: auto; border-radius: 12px; }
 /* Label ini duduk di sudut peta yang dikosongkan dari panel logo poster,
    supaya area transparannya terlihat memang disengaja. */
+/* Label "Rute 5K/10K" duduk di panel putih yang sudah tercetak di sudut kiri
+   atas kedua peta. Dulu ukurannya rem tetap + min-width 74px: di layar sempit
+   panel putihnya ikut mengecil tapi tulisannya tidak, jadi "5K" tumpah ke atas
+   citra satelit dan terbaca berantakan. Sekarang satuannya cqw — ikut lebar
+   peta (.map-frame jadi container) — jadi selalu pas di dalam panel di semua
+   ukuran layar. Warnanya juga digelapkan: marigold nyaris hilang di atas putih,
+   diganti flame untuk angka dan tinta lembut untuk kata "Rute". */
 .map-badge {
   position: absolute; top: 0; left: 0; z-index: 2;
-  width: 10.4%; min-width: 74px; aspect-ratio: 1 / 2.1;
+  width: 10.4%; aspect-ratio: 1 / 2.1;
   display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
   padding: 0 0 0 4%;
-  font-family: 'Space Mono'; font-size: .58rem; letter-spacing: .14em;
-  text-transform: uppercase; color: #A79FB4; line-height: 1.2;
+  font-family: 'Space Mono'; font-size: 1.55cqw; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--ink-soft); line-height: 1.2;
 }
 .map-badge b {
-  font-family: 'Big Shoulders Display'; font-weight: 900; font-size: 1.9rem;
-  letter-spacing: .01em; color: var(--marigold);
+  font-family: 'Big Shoulders Display'; font-weight: 900; font-size: 5cqw;
+  letter-spacing: .01em; color: var(--flame);
 }
 .map-cap { font-family: 'Space Mono'; font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: #A79FB4; margin-top: 14px; text-align: center; line-height: 1.5; padding: 0 6px 4px; }
 .map-kosong {
@@ -1000,15 +1022,23 @@ details .a { padding: 0 24px 22px; color: var(--ink-soft); font-size: .98rem; }
   .berita-grid { grid-template-columns: 1fr 1fr; }
   .berita-card:first-child { grid-column: span 2; }
 
-  /* Di layar sempit hero jadi satu kolom, jadi foto dipindah ke pita bawah —
-     kalau tetap di kanan ia akan menindih teks. */
+  /* Di layar sempit foto memenuhi SELURUH hero, bukan pita bawah 46% —
+     versi pita jatuh di luar layar sehingga pelari baru terlihat setelah
+     menggulir. Dibuat redup dan diberi selubung gelap supaya judul besar
+     tetap tajam terbaca di atasnya. Fotonya potret, jadi posisi atas (25%)
+     menjaga sosok pelarinya utuh di bingkai. */
   .hero-photo {
-    inset: auto 0 0 0;
+    inset: 0;
     width: 100%;
-    height: 46%;
-    opacity: .5;
-    -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .7) 45%, transparent 100%);
-    mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .7) 45%, transparent 100%);
+    height: 100%;
+    background-size: cover;
+    background-position: 50% 25%;
+    opacity: .45;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .hero-photo::after {
+    background: linear-gradient(to bottom, rgba(23, 19, 31, .62) 0%, rgba(23, 19, 31, .3) 45%, rgba(23, 19, 31, .68) 100%);
   }
 }
 @media (max-width: 640px) {
@@ -1021,6 +1051,24 @@ details .a { padding: 0 24px 22px; color: var(--ink-soft); font-size: .98rem; }
   .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1.5px solid rgba(255, 255, 255, .2); }
   .fac-grid { grid-template-columns: 1fr; }
   .meta-strip { gap: 18px; }
+
+  /* Tanggal dan lokasi bertumpuk rapi, bulatannya sejajar baris pertama. */
+  .eyebrow { align-items: flex-start; }
+  .eyebrow b { margin-top: 3px; }
+  .eyebrow-txt { flex-direction: column; }
+  .eyebrow-loc::before { content: none; margin-right: 0; }
+
+  /* Dua tab rute berdampingan sama lebar — bukan dua kartu lebar penuh yang
+     bertumpuk memakan setengah layar. Efek angkat saat hover ikut dimatikan:
+     di layar sentuh ia hanya membuat tombol tampak melompat saat ditekan. */
+  .route-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 26px; }
+  .route-tab { padding: .55rem .7rem; gap: 10px; border-radius: 12px; }
+  .route-tab:hover { transform: none; box-shadow: none; }
+  .route-tab.is-on { box-shadow: 4px 4px 0 var(--flame); }
+  .route-chip { min-width: 46px; font-size: 1.3rem; padding: .35rem .5rem; }
+  .route-tab-txt { gap: 2px; min-width: 0; }
+  .route-tab-txt b { font-size: 1.05rem; }
+  .route-tab-txt small { font-size: .54rem; line-height: 1.45; }
 
   /* Satu kolom: semua kartu kembali bertumpuk vertikal, termasuk yang utama. */
   .berita-grid { grid-template-columns: 1fr; }
