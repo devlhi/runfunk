@@ -155,7 +155,18 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Big+Shoulders+Display:wght@600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    {{-- Font dimuat TANPA memblokir render: dipasang sebagai media=print (browser
+         mengunduhnya di jalur non-kritis) lalu dialihkan ke "all" begitu selesai.
+         Sebelumnya <link rel=stylesheet> biasa menahan render ±750 md dan menjadi
+         rantai kritis terpanjang. display=swap membuat teks langsung tampil
+         dengan font cadangan dulu; <noscript> menjaga font tetap termuat bila
+         JavaScript dimatikan. --}}
+    <link rel="stylesheet" media="print" onload="this.media='all'"
+          href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Big+Shoulders+Display:wght@600;700;800;900&family=Space+Mono:wght@400;700&display=swap">
+    <noscript>
+        <link rel="stylesheet"
+              href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Big+Shoulders+Display:wght@600;700;800;900&family=Space+Mono:wght@400;700&display=swap">
+    </noscript>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @inertiaHead

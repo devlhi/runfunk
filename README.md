@@ -207,6 +207,20 @@ server {
     charset utf-8;
     client_max_body_size 8M;   # bukti bayar sampai 4 MB
 
+    # Cache aset statis — memperbaiki "durasi cache tidak efisien" di PageSpeed.
+    # Aset build Vite bernama-hash (isi berubah => nama berubah) aman selamanya;
+    # gambar bernama tetap dicache sebulan supaya pembaruan tetap menyebar.
+    location ^~ /build/ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        access_log off;
+    }
+    location ~* \.(webp|avif|png|jpe?g|gif|svg|ico|woff2?)$ {
+        expires 30d;
+        add_header Cache-Control "public";
+        access_log off;
+    }
+
     location / {
         try_files $uri $uri/ /index.php?$query_string;
     }

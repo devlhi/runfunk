@@ -27,6 +27,9 @@ const rutes = [
         slug: '5k',
         label: '5K',
         peta: '/images/rute-5k.webp',
+        // Dimensi asli berkas — dipasang ke <img> agar browser memesan ruang
+        // sebelum petanya turun, jadi tata letak tidak melonjak (CLS).
+        w: 1200, h: 874,
         start: 'Lapangan Tuladenggi',
         jalan: 'Jl. Gorontalo Outer Ring Road',
         titik: [
@@ -37,6 +40,7 @@ const rutes = [
         slug: '10k',
         label: '10K',
         peta: '/images/rute-10k.webp',
+        w: 1195, h: 872,
         start: 'Lapangan Tuladenggi',
         jalan: 'Jl. Ahmad A. Wahab · Outer Ring Road · Jl. Kota Gorontalo · Jl. Abdul Gandi Pajuhi',
         titik: [
@@ -149,7 +153,7 @@ onBeforeUnmount(() => {
         <div class="wrap hero-in">
             <div>
                 <div class="hero-org">
-                    <img src="/images/logo-ika.jpeg" alt="Logo Ikatan Keluarga Alumni SMK Gotong Royong Telaga Gorontalo" />
+                    <img src="/images/logo-ika.jpeg" width="640" height="640" alt="Logo Ikatan Keluarga Alumni SMK Gotong Royong Telaga Gorontalo" />
                     <span>
                         <b>Diselenggarakan oleh IKA</b>
                         Ikatan Keluarga Alumni SMK Gotong Royong Telaga, Gorontalo
@@ -396,6 +400,7 @@ onBeforeUnmount(() => {
                         <div v-if="!petaGagal[rute.slug]" class="map-frame">
                             <img
                                 :src="rute.peta"
+                                :width="rute.w" :height="rute.h"
                                 :alt="`Peta rute ${rute.label} Gong Fun Run 2026 dengan titik start, finis, dan water station`"
                                 loading="lazy"
                                 @error="petaGagal[rute.slug] = true"
@@ -439,7 +444,7 @@ onBeforeUnmount(() => {
             <div class="merch">
                 <figure class="merch-card reveal">
                     <span class="merch-tag">Jersey Resmi</span>
-                    <img src="/images/jersey.jpeg" alt="Jersey Gong Fun Run 2026 tampak depan dan belakang, warna hijau dengan tulisan emas" loading="lazy" />
+                    <img src="/images/jersey.jpeg" width="1376" height="768" alt="Jersey Gong Fun Run 2026 tampak depan dan belakang, warna hijau dengan tulisan emas" loading="lazy" />
                     <figcaption>
                         <b>Jersey Gong Fun Run 2026</b>
                         Bahan adem dan ringan, sablon emas depan-belakang. Ukuran S sampai XXL,
@@ -449,7 +454,7 @@ onBeforeUnmount(() => {
 
                 <figure class="merch-card reveal">
                     <span class="merch-tag merch-tag--gold">Medali Finisher</span>
-                    <img src="/images/medali.jpeg" alt="Medali finisher Gong Fun Run 2026 berwarna emas dengan pita hijau" loading="lazy" />
+                    <img src="/images/medali.jpeg" width="1408" height="768" alt="Medali finisher Gong Fun Run 2026 berwarna emas dengan pita hijau" loading="lazy" />
                     <figcaption>
                         <b>Medali Finisher</b>
                         Medali emas berpita hijau bergambar pelari dan panorama Gorontalo.

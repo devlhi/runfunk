@@ -23,3 +23,18 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Cache aset statis (memperbaiki "durasi cache tidak efisien" di PageSpeed).
+# Hanya berlaku bila server memakai Apache; untuk Nginx lihat cuplikan di README.
+<IfModule mod_headers.c>
+    # Berkas build Vite bernama-hash: isi berubah => nama berubah, jadi aman
+    # disimpan selamanya.
+    <FilesMatch "\.(css|js|mjs|woff2?|ttf|otf)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    # Gambar/ikon bernama tetap: cache sebulan supaya pembaruan tetap menyebar
+    # dalam waktu wajar.
+    <FilesMatch "\.(webp|avif|png|jpe?g|gif|svg|ico)$">
+        Header set Cache-Control "public, max-age=2592000"
+    </FilesMatch>
+</IfModule>
