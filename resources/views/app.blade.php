@@ -31,6 +31,33 @@
     // Foto pelari dipakai sebagai gambar pratinjau saat tautannya dibagikan.
     $gambar = asset('images/hero-runners.jpg');
 
+    // Meta halaman = acara secara bawaan. Untuk artikel berita, ditimpa dengan
+    // judul, ringkasan, dan sampul artikelnya sendiri. Ini WAJIB di sisi server:
+    // perayap yang tak menjalankan JavaScript (WhatsApp, Facebook, dan ambilan
+    // awal Google) hanya membaca HTML awal ini — bukan tag yang dipasang Inertia
+    // di sisi klien. Modelnya sudah di-resolve route binding, jadi tanpa kueri
+    // tambahan.
+    $judulHalaman = config('app.name', 'Gong Fun Run 2026');
+    $ogJudul = "{$namaAcara} — Fun Run 5K & 10K Gorontalo";
+    $deskripsi = $ringkasan;
+    $ogGambar = $gambar;
+    $ogTipe = 'website';
+
+    try {
+        $artikel = request()->routeIs('news.show') ? request()->route('news') : null;
+        if ($artikel instanceof \App\Models\News && $artikel->is_published) {
+            $judulHalaman = $artikel->title;
+            $ogJudul = $artikel->title;
+            $deskripsi = $artikel->ringkasan();
+            $ogTipe = 'article';
+            if ($sampul = $artikel->coverUrl()) {
+                $ogGambar = $sampul;
+            }
+        }
+    } catch (\Throwable) {
+        // Biarkan memakai meta acara bawaan.
+    }
+
     // Dibaca dari daftar middleware rutenya sendiri, bukan ditulis ulang di sini —
     // jadi tag <meta> ini tidak akan pernah berbeda pendapat dengan tajuk
     // X-Robots-Tag yang dipasang middleware NoIndex.
@@ -112,7 +139,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title inertia>{{ config('app.name', 'Gong Fun Run 2026') }}</title>
+    <title inertia>{{ $judulHalaman }}</title>
 
     {{-- Favicon: logo IKA sebagai favicon.ico (memuat 16/32/48/64 px). ?v=2
          memaksa peramban memuat ulang, melewati ikon lama yang ter-cache. --}}
@@ -131,27 +158,28 @@
         <meta name="google-site-verification" content="{{ $googleVerif }}">
     @endif
 
-    {{-- Deskripsi yang muncul di bawah judul pada hasil pencarian. --}}
-    <meta name="description" content="{{ $ringkasan }}">
+    {{-- Deskripsi yang muncul di bawah judul pada hasil pencarian. Untuk artikel
+         berita, ini ringkasan artikelnya; selebihnya ringkasan acara. --}}
+    <meta name="description" content="{{ $deskripsi }}">
     <meta name="author" content="IKA SMK Gotong Royong Telaga, Gorontalo">
     <meta name="theme-color" content="#0F766E">
 
     {{-- Open Graph: dipakai WhatsApp, Facebook, dan Telegram saat tautan
-         dibagikan. Untuk acara seperti ini, penyebarannya justru lewat sana,
-         bukan lewat mesin pencari. --}}
-    <meta property="og:type" content="website">
+         dibagikan. Nilainya per-halaman (lihat blok @php di atas) supaya tiap
+         artikel berita punya kartu sendiri, bukan kartu acara yang sama. --}}
+    <meta property="og:type" content="{{ $ogTipe }}">
     <meta property="og:site_name" content="{{ $namaAcara }}">
-    <meta property="og:title" content="{{ $namaAcara }} — Fun Run 5K & 10K Gorontalo">
-    <meta property="og:description" content="{{ $ringkasan }}">
+    <meta property="og:title" content="{{ $ogJudul }}">
+    <meta property="og:description" content="{{ $deskripsi }}">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:image" content="{{ $gambar }}">
-    <meta property="og:image:alt" content="Peserta fun run sedang berlari">
+    <meta property="og:image" content="{{ $ogGambar }}">
+    <meta property="og:image:alt" content="{{ $ogTipe === 'article' ? $ogJudul : 'Peserta fun run sedang berlari' }}">
     <meta property="og:locale" content="id_ID">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ $namaAcara }} — Fun Run 5K & 10K Gorontalo">
-    <meta name="twitter:description" content="{{ $ringkasan }}">
-    <meta name="twitter:image" content="{{ $gambar }}">
+    <meta name="twitter:title" content="{{ $ogJudul }}">
+    <meta name="twitter:description" content="{{ $deskripsi }}">
+    <meta name="twitter:image" content="{{ $ogGambar }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

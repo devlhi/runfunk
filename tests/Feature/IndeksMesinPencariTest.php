@@ -244,6 +244,40 @@ class IndeksMesinPencariTest extends TestCase
         }
     }
 
+    /* ---------------------------------- Meta per-artikel untuk perayap */
+
+    public function test_artikel_berita_membawa_meta_sendiri_di_html_awal(): void
+    {
+        // WhatsApp, Facebook, dan ambilan awal Google tidak menjalankan JS, jadi
+        // meta artikel WAJIB ada di HTML server — bukan cuma dipasang Inertia di
+        // sisi klien. Kalau tidak, tiap berita yang dibagikan tampil sebagai
+        // kartu acara yang sama.
+        $penulis = $this->pengelola();
+        $berita = News::create([
+            'title' => 'Rute Baru Diumumkan', 'slug' => 'rute-baru-diumumkan',
+            'excerpt' => 'Panitia merilis peta rute resmi 5K dan 10K.',
+            'body' => 'Isi lengkap berita.', 'author_id' => $penulis->id,
+            'is_published' => true, 'published_at' => now()->subDay(),
+        ]);
+
+        $html = $this->get('/berita/'.$berita->slug)->getContent();
+
+        $this->assertStringContainsString('<title inertia>Rute Baru Diumumkan</title>', $html);
+        $this->assertStringContainsString('property="og:type" content="article"', $html);
+        $this->assertStringContainsString('content="Rute Baru Diumumkan"', $html);
+        $this->assertStringContainsString('Panitia merilis peta rute resmi 5K dan 10K.', $html);
+    }
+
+    public function test_beranda_tetap_memakai_meta_acara(): void
+    {
+        // Perbaikan meta berita tidak boleh bocor ke beranda.
+        $html = $this->get('/')->getContent();
+
+        $this->assertStringContainsString('property="og:type" content="website"', $html);
+        // "&" ter-escape jadi "&amp;" di atribut HTML — itu memang benar.
+        $this->assertStringContainsString('Fun Run 5K &amp; 10K Gorontalo', $html);
+    }
+
     /* ------------------------------------------ Verifikasi Search Console */
 
     public function test_kode_verifikasi_google_muncul_di_kepala_halaman(): void

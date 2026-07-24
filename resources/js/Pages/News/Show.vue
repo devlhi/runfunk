@@ -41,15 +41,15 @@ function hapus(id) {
 </script>
 
 <template>
+    <!--
+        Hanya judul di sini — untuk memperbarui judul tab saat berpindah antar
+        artikel tanpa muat ulang. Meta description & Open Graph SENGAJA tidak di
+        sini: tag Inertia dipasang di sisi klien, sedangkan WhatsApp/Facebook dan
+        ambilan awal Google tidak menjalankan JS. Semuanya dirender server di
+        resources/views/app.blade.php berdasarkan artikel yang sedang dibuka.
+    -->
     <Head>
         <title>{{ news.title }}</title>
-        <meta name="description" :content="news.excerpt" />
-        <!-- Tag ini yang dibaca WhatsApp & Facebook saat tautannya dibagikan. -->
-        <meta property="og:type" content="article" />
-        <meta property="og:title" :content="news.title" />
-        <meta property="og:description" :content="news.excerpt" />
-        <meta v-if="news.cover_url" property="og:image" :content="news.cover_url" />
-        <meta name="twitter:card" :content="news.cover_url ? 'summary_large_image' : 'summary'" />
     </Head>
 
     <SiteNav />
