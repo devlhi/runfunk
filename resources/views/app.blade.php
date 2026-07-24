@@ -25,8 +25,21 @@
 
     $tanggal = Carbon::parse($tanggalMentah);
 
-    $ringkasan = "Fun run 5K & 10K di Gorontalo, {$tanggal->translatedFormat('d F Y')}. "
-        .'Terbuka untuk umum, semua usia. Diselenggarakan IKA SMK Gotong Royong Telaga.';
+    // Deskripsi yang muncul di hasil pencarian. Ditulis mengalir tapi memuat
+    // frasa yang paling dicari orang: "Fun Run Gorontalo", "5K/10K",
+    // "alumni SMK Gotong Royong Telaga". Bukan tumpukan kata kunci — Google
+    // menghukum itu — hanya kalimat wajar yang kebetulan memuat istilahnya.
+    $ringkasan = "Fun Run Gorontalo 2026: lomba lari 5K & 10K di Kabupaten Gorontalo, "
+        ."{$tanggal->translatedFormat('d F Y')}. Terbuka umum, semua usia — "
+        .'diselenggarakan IKA (alumni) SMK Gotong Royong Telaga.';
+
+    // Meta keywords: Google mengabaikannya, tapi ditambahkan sesuai permintaan
+    // dan masih dibaca sebagian mesin pencari/alat lain. Dijaga ringkas dan
+    // relevan — daftar yang terlalu panjang justru terbaca spam.
+    $kataKunci = 'Fun Run Gorontalo, Fun Run 5K Gorontalo, Fun Run 10K Gorontalo, '
+        .'lomba lari Gorontalo 2026, Gong Fun Run 2026, '
+        .'Fun Run alumni SMK Gotong Royong Telaga, IKA SMK Gotong Royong Telaga, '
+        .'lari santai Gorontalo, pendaftaran fun run Gorontalo';
 
     // Foto pelari dipakai sebagai gambar pratinjau saat tautannya dibagikan.
     $gambar = asset('images/hero-runners.jpg');
@@ -102,6 +115,14 @@
             'image' => $gambar,
             'url' => url('/'),
             'sport' => 'Running',
+            // Nama lain yang dipakai orang mencari acara ini.
+            'alternateName' => [
+                'Fun Run Gorontalo 2026',
+                'Gong Fun Run Gorontalo',
+                'Fun Run Alumni SMK Gotong Royong Telaga',
+            ],
+            'keywords' => 'fun run Gorontalo, lomba lari 5K & 10K Gorontalo, lari santai, '
+                .'IKA SMK Gotong Royong Telaga, Gong Fun Run 2026',
             'location' => [
                 '@type' => 'Place',
                 'name' => $lokasi,
@@ -169,6 +190,9 @@
     {{-- Deskripsi yang muncul di bawah judul pada hasil pencarian. Untuk artikel
          berita, ini ringkasan artikelnya; selebihnya ringkasan acara. --}}
     <meta name="description" content="{{ $deskripsi }}">
+    @unless ($privat)
+        <meta name="keywords" content="{{ $kataKunci }}">
+    @endunless
     <meta name="author" content="IKA SMK Gotong Royong Telaga, Gorontalo">
     <meta name="theme-color" content="#0F766E">
 

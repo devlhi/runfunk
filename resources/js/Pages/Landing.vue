@@ -141,7 +141,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <Head title="Fun Run 5K & 10K · Gorontalo" />
+    <Head title="Fun Run Gorontalo · Lari 5K & 10K" />
 
     <SiteNav show-anchors />
 
