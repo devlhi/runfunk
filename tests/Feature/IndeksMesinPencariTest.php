@@ -197,7 +197,7 @@ class IndeksMesinPencariTest extends TestCase
         $respon->assertSee('property="og:title"', false);
         $respon->assertSee('property="og:description"', false);
         $respon->assertSee('property="og:image"', false);
-        $respon->assertSee(asset('images/hero-runners.jpg'), false);
+        $respon->assertSee(asset('images/hero-pelari.jpg'), false);
     }
 
     public function test_beranda_membawa_data_terstruktur_acara(): void

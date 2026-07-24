@@ -84,7 +84,7 @@ defineProps({
     width: 52%;
     z-index: 0;
     pointer-events: none;
-    background-image: url('/images/hero-runners.jpg');
+    background-image: url('/images/hero-pelari.jpg');
     /* Fotonya kini potret (pelari berjersey resmi), jadi cover + posisi atas —
        setelan lama (auto 150%, 58% 78%) disetel untuk foto lanskap yang sudah
        diganti, dan akan menampilkan potongan yang salah. */

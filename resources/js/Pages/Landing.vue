@@ -649,7 +649,7 @@ onBeforeUnmount(() => {
    atasnya. Posisi 50% 18% menjaga kepala tetap di dalam bingkai. */
 .hero-photo {
   position: absolute; inset: 0 0 0 auto; width: 56%; z-index: 0; pointer-events: none;
-  background-image: url('/images/hero-runners.jpg');
+  background-image: url('/images/hero-pelari.jpg');
   background-size: cover;
   background-position: 50% 18%;
   background-repeat: no-repeat;
