@@ -38,13 +38,38 @@
 
     // Disusun di sini, bukan langsung di dalam @json() pada badan halaman:
     // direktif Blade tidak bisa mengurai larik bersarang multi-baris.
-    $dataAcara = request()->path() === '/'
-        ? json_encode([
+    $dataAcara = null;
+    if (request()->path() === '/') {
+        // Penawaran pendaftaran per kategori. Search Console menandai "offers"
+        // hilang — di sinilah harga sengaja ditampilkan untuk SEO (Google
+        // memunculkan "mulai Rp ..." di kartu hasil), berbeda dari halaman
+        // depan yang menyembunyikan harga dari tamu. Kalau tabel kategori belum
+        // ada (basis data belum dimigrasi), penawaran dilewati tanpa galat.
+        $penawaran = [];
+        try {
+            foreach (\App\Models\RaceCategory::orderBy('price')->get() as $kategori) {
+                $penawaran[] = [
+                    '@type' => 'Offer',
+                    'name' => $kategori->name,
+                    'price' => (string) (int) $kategori->price,
+                    'priceCurrency' => 'IDR',
+                    'availability' => 'https://schema.org/InStock',
+                    'url' => url('/daftar-akun?kategori='.$kategori->slug),
+                ];
+            }
+        } catch (\Throwable) {
+            $penawaran = [];
+        }
+
+        $acara = [
             '@context' => 'https://schema.org',
             '@type' => 'SportsEvent',
             'name' => $namaAcara,
             'description' => $ringkasan,
             'startDate' => $tanggal->toAtomString(),
+            // Search Console menandai "endDate" hilang. Lari + acara di garis
+            // finis (musik, doorprize) wajar rampung sekitar tengah hari.
+            'endDate' => $tanggal->copy()->addHours(6)->toAtomString(),
             'eventStatus' => 'https://schema.org/EventScheduled',
             'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
             'image' => $gambar,
@@ -65,8 +90,20 @@
                 'name' => 'IKA — Ikatan Keluarga Alumni SMK Gotong Royong Telaga',
                 'url' => url('/'),
             ],
-        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG)
-        : null;
+            // Search Console menandai "performer" hilang. Pada lomba massal,
+            // yang "tampil" adalah para pelarinya sendiri.
+            'performer' => [
+                '@type' => 'PerformingGroup',
+                'name' => 'Pelari '.$namaAcara,
+            ],
+        ];
+
+        if ($penawaran) {
+            $acara['offers'] = $penawaran;
+        }
+
+        $dataAcara = json_encode($acara, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG);
+    }
 @endphp
 <!DOCTYPE html>
 <html lang="id">
@@ -76,6 +113,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title inertia>{{ config('app.name', 'Gong Fun Run 2026') }}</title>
+
+    {{-- Favicon merek "G" (ubin toska). favicon.ico memuat 16/32/48 px; PNG dan
+         apple-touch untuk peramban modern; manifest untuk "tambah ke layar
+         utama". ?v=1 memaksa peramban melewati favicon.ico lama yang kosong. --}}
+    <link rel="icon" href="{{ asset('favicon.ico') }}?v=1" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}?v=1">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}?v=1">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=1">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
 
     @if ($privat)
         {{-- Halaman ini berisi data orang. Selain tajuk X-Robots-Tag, ditandai
