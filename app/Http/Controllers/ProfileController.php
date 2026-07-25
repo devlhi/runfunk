@@ -44,12 +44,31 @@ class ProfileController extends Controller
             'birth_date' => ['nullable', 'date', 'before:today'],
             'city' => ['nullable', 'string', 'max:120'],
             'address' => ['nullable', 'string', 'max:500'],
+            // Hanya diminta kalau alamatnya benar-benar berubah — mengetik ulang
+            // kata sandi untuk sekadar memperbaiki ejaan nama itu menyebalkan.
+            'current_password' => ['sometimes', 'string'],
         ]);
 
-        $gantiEmail = $user->isStaff() === false
-            && mb_strtolower($validated['email']) !== mb_strtolower($user->email);
+        $emailBerubah = mb_strtolower($validated['email']) !== mb_strtolower($user->email);
 
-        $user->update($validated);
+        // Mengganti email adalah tindakan paling berbahaya di halaman ini: alamat
+        // baru bisa langsung dipakai meminta tautan atur ulang kata sandi. Tanpa
+        // pembuktian kata sandi, siapa pun yang sempat memakai sesi korban —
+        // laptop yang ditinggal terbuka, sesi yang dicuri — bisa mengalihkan
+        // akunnya ke alamat sendiri lalu menguncinya permanen, padahal ia tidak
+        // pernah tahu kata sandinya.
+        if ($emailBerubah && ! Hash::check($request->input('current_password', ''), $user->password)) {
+            return back()->withErrors([
+                'current_password' => 'Masukkan kata sandimu saat ini untuk mengganti alamat email.',
+            ]);
+        }
+
+        // Kolom pembuktian tidak ikut disimpan ke basis data.
+        $user->update(collect($validated)->except('current_password')->all());
+
+        // Panitia sengaja tidak pernah tertahan verifikasi — mereka harus tetap
+        // bisa bekerja di hari lomba walau surelnya bermasalah.
+        $gantiEmail = $emailBerubah && ! $user->isStaff();
 
         if (! $gantiEmail) {
             return back()->with('success', 'Profil diperbarui.');

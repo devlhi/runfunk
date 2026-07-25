@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import PanelLayout from '../Layouts/PanelLayout.vue';
 
@@ -6,7 +7,17 @@ const props = defineProps({
     profile: { type: Object, required: true },
 });
 
-const profileForm = useForm({ ...props.profile });
+const profileForm = useForm({ ...props.profile, current_password: '' });
+
+/**
+ * Mengganti email memerlukan kata sandi: alamat baru bisa langsung dipakai
+ * meminta tautan atur ulang, jadi tanpa ini sesi yang dicuri cukup untuk
+ * mengambil alih akun. Kolomnya baru muncul saat alamatnya benar-benar diubah,
+ * supaya menyunting nama saja tetap ringkas.
+ */
+const emailBerubah = computed(
+    () => (profileForm.email ?? '').trim().toLowerCase() !== (props.profile.email ?? '').toLowerCase()
+);
 
 const passwordForm = useForm({
     current_password: '',
@@ -15,7 +26,11 @@ const passwordForm = useForm({
 });
 
 function saveProfile() {
-    profileForm.patch('/profil', { preserveScroll: true });
+    profileForm.patch('/profil', {
+        preserveScroll: true,
+        // Jangan tinggalkan kata sandi tersimpan di kolom setelah selesai.
+        onFinish: () => profileForm.reset('current_password'),
+    });
 }
 
 function savePassword() {
@@ -67,6 +82,24 @@ function savePassword() {
                             />
                             <p v-if="profileForm.errors.phone" class="error">{{ profileForm.errors.phone }}</p>
                         </div>
+                    </div>
+
+                    <!-- Muncul hanya saat alamat email diubah. -->
+                    <div v-if="emailBerubah" class="field field-sandi">
+                        <label for="current_password">Kata sandi saat ini</label>
+                        <input
+                            id="current_password" v-model="profileForm.current_password"
+                            type="password" class="input" autocomplete="current-password"
+                            :class="{ 'has-error': profileForm.errors.current_password }"
+                            placeholder="Wajib diisi untuk mengganti email"
+                        />
+                        <p v-if="profileForm.errors.current_password" class="error">
+                            {{ profileForm.errors.current_password }}
+                        </p>
+                        <p v-else class="hint">
+                            Email yang baru bisa dipakai meminta tautan atur ulang kata sandi,
+                            jadi perubahannya kami pastikan dulu memang darimu.
+                        </p>
                     </div>
 
                     <div class="row-2">
@@ -148,6 +181,17 @@ function savePassword() {
 
 <style scoped>
 .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* Ditandai garis oranye supaya jelas ini langkah pengaman, bukan isian biasa. */
+.field-sandi {
+    padding: 14px 16px;
+    margin-bottom: 4px;
+    border-left: 3px solid var(--flame);
+    border-radius: 0 10px 10px 0;
+    background: rgba(255, 74, 28, .05);
+}
+
+.hint { margin-top: 6px; font-size: .8rem; line-height: 1.5; color: var(--ink-soft); }
 
 @media (max-width: 640px) {
     .row-2 { grid-template-columns: 1fr; }

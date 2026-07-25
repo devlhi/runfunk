@@ -27,13 +27,87 @@ class AuditKeamananLanjutanTest extends TestCase
         ], $ubah));
     }
 
+    /**
+     * Kiriman formulir profil yang sah — termasuk kata sandi, karena pemilik akun
+     * yang sesungguhnya memang tahu kata sandinya. Mengganti email tanpa kolom ini
+     * diuji terpisah di bagian pengambilalihan akun.
+     */
     private function isiProfil(array $ubah = []): array
     {
         return array_merge([
             'name' => 'Peserta',
             'email' => 'peserta@example.com',
             'phone' => '081200001111',
+            'current_password' => 'rahasia12345',
         ], $ubah);
+    }
+
+    /* --------------------- Sesi yang dicuri tidak cukup untuk merebut akun */
+
+    public function test_ganti_email_tanpa_kata_sandi_ditolak(): void
+    {
+        // Rantai serangannya: penyerang memakai sesi korban yang tertinggal
+        // terbuka (ia TIDAK tahu kata sandinya), mengalihkan email ke alamatnya
+        // sendiri, lalu menekan "lupa kata sandi" — tautan atur ulang mendarat
+        // di kotak masuknya dan korban terkunci keluar permanen.
+        $user = $this->peserta();
+
+        $this->actingAs($user)
+            ->patch('/profil', [
+                'name' => 'Peserta',
+                'email' => 'penyerang@evil.com',
+                'phone' => '081200001111',
+            ])
+            ->assertSessionHasErrors('current_password');
+
+        $user->refresh();
+
+        $this->assertSame('peserta@example.com', $user->email, 'Email korban ikut berubah.');
+        $this->assertNotNull($user->email_verified_at, 'Status verifikasi korban ikut tercabut.');
+    }
+
+    public function test_ganti_email_dengan_kata_sandi_salah_ditolak(): void
+    {
+        $user = $this->peserta();
+
+        $this->actingAs($user)
+            ->patch('/profil', $this->isiProfil([
+                'email' => 'penyerang@evil.com',
+                'current_password' => 'tebakan-ngawur',
+            ]))
+            ->assertSessionHasErrors('current_password');
+
+        $this->assertSame('peserta@example.com', $user->refresh()->email);
+    }
+
+    public function test_menyunting_nama_saja_tidak_perlu_kata_sandi(): void
+    {
+        // Pengaman ini hanya untuk penggantian email. Membetulkan ejaan nama
+        // tidak boleh ikut menuntut kata sandi.
+        $user = $this->peserta();
+
+        $this->actingAs($user)
+            ->patch('/profil', [
+                'name' => 'Peserta Ejaan Benar',
+                'email' => 'peserta@example.com',
+                'phone' => '081200001111',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('Peserta Ejaan Benar', $user->refresh()->name);
+    }
+
+    public function test_kata_sandi_pembuktian_tidak_ikut_tersimpan(): void
+    {
+        $user = $this->peserta();
+
+        $this->actingAs($user)->patch('/profil', $this->isiProfil(['name' => 'Nama Baru']));
+
+        $user->refresh();
+
+        // Kolomnya tidak ada di tabel; yang dijaga: kata sandi asli tidak tertimpa
+        // teks mentah dan tetap bisa dipakai masuk.
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('rahasia12345', $user->password));
     }
 
     /* ------------------------------- Ganti email mencabut verifikasi */
