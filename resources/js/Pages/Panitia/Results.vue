@@ -143,6 +143,18 @@ function persen() {
                     <span v-if="row.peringkat" class="peringkat mono">#{{ row.peringkat }}</span>
                     <span v-else class="peringkat mono is-off">—</span>
 
+                    <!-- Sertifikat baru terbit setelah waktu finisnya tersimpan,
+                         jadi tautannya ikut muncul belakangan. Dibuka di tab baru
+                         supaya daftar yang sedang diisi tidak ikut berpindah. -->
+                    <a
+                        v-if="row.waktu"
+                        :href="`/sertifikat/${row.id}`"
+                        target="_blank" rel="noopener"
+                        class="lihat-sertifikat"
+                        :title="`Lihat e-sertifikat ${row.nama}`"
+                    >🏅 Sertifikat</a>
+                    <span v-else class="lihat-sertifikat is-off" title="Isi waktu finis dulu">🏅 Sertifikat</span>
+
                     <p v-if="galat[row.id]" class="error baris-galat">{{ galat[row.id] }}</p>
                 </article>
 
@@ -181,6 +193,23 @@ function persen() {
 
 .peringkat { flex: none; width: 46px; text-align: right; font-weight: 700; font-size: .9rem; color: var(--flame); }
 .peringkat.is-off { color: var(--txt-dim); font-weight: 400; }
+
+.lihat-sertifikat {
+    flex: none;
+    font-family: 'Space Mono', monospace;
+    font-size: .66rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: .38rem .7rem;
+    border: 1.5px solid var(--edge);
+    border-radius: 50px;
+    color: var(--txt-soft);
+    transition: .14s;
+}
+a.lihat-sertifikat:hover { border-color: var(--flame); color: var(--flame); }
+/* Belum ada waktu finis: tampil redup dan tidak bisa diklik. */
+.lihat-sertifikat.is-off { opacity: .38; cursor: not-allowed; }
 
 .baris-galat { flex-basis: 100%; margin: 0; }
 .batas { padding-top: 14px; }

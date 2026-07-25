@@ -157,6 +157,17 @@ function cetak() {
     .halaman { background: #fff; padding: 0; }
     .sertifikat { max-width: none; border-radius: 0; box-shadow: none; border-width: 2px; margin: 0; }
     @page { size: A4 landscape; margin: 8mm; }
+
+    /* Tanpa ini browser boleh membuang warna demi menghemat tinta (nilai bawaan
+       "economy"): nama peserta yang oranye tercetak kelabu, empat sudut oranye
+       hilang, dan latar krem jadi putih polos — sertifikatnya kehilangan seluruh
+       identitasnya justru saat dicetak. Aturan yang sama sudah dipakai di kartu
+       BIB dan kartu panitia. */
+    .sertifikat,
+    .sertifikat * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
 }
 
 @media (max-width: 720px) {
