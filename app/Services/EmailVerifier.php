@@ -28,7 +28,12 @@ class EmailVerifier
      * peserta bisa menekan "Kirim ulang" setelah SMTP-nya dibetulkan, tanpa harus
      * mendaftar ulang dari awal.
      *
-     * @return array{kode: string, terkirim: bool, pesan: string}
+     * 'pesan' aman ditampilkan ke siapa pun. Keterangan teknisnya dipisah ke
+     * 'detail' karena galat transport memuat nama host, porta, dan sering juga
+     * nama pengguna SMTP — peta infrastruktur surat yang tidak boleh sampai ke
+     * peserta. Hanya pengelola yang boleh melihatnya.
+     *
+     * @return array{kode: string, terkirim: bool, pesan: string, detail: string|null}
      */
     public function terbitkan(User $user): array
     {
@@ -51,11 +56,18 @@ class EmailVerifier
             return [
                 'kode' => $kode,
                 'terkirim' => false,
-                'pesan' => 'Kode dibuat, tapi emailnya gagal terkirim: '.$e->getMessage(),
+                'pesan' => 'Kodenya sudah dibuat, tapi emailnya belum berhasil terkirim. '
+                    .'Coba tekan "Kirim ulang" sebentar lagi, atau hubungi panitia.',
+                'detail' => $e->getMessage(),
             ];
         }
 
-        return ['kode' => $kode, 'terkirim' => true, 'pesan' => 'Kode verifikasi dikirim ke '.$user->email];
+        return [
+            'kode' => $kode,
+            'terkirim' => true,
+            'pesan' => 'Kode verifikasi dikirim ke '.$user->email,
+            'detail' => null,
+        ];
     }
 
     /**

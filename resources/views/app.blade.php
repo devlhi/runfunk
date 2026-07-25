@@ -80,27 +80,13 @@
     // direktif Blade tidak bisa mengurai larik bersarang multi-baris.
     $dataAcara = null;
     if (request()->path() === '/') {
-        // Penawaran pendaftaran per kategori. Search Console menandai "offers"
-        // hilang — di sinilah harga sengaja ditampilkan untuk SEO (Google
-        // memunculkan "mulai Rp ..." di kartu hasil), berbeda dari halaman
-        // depan yang menyembunyikan harga dari tamu. Kalau tabel kategori belum
-        // ada (basis data belum dimigrasi), penawaran dilewati tanpa galat.
-        $penawaran = [];
-        try {
-            foreach (\App\Models\RaceCategory::orderBy('price')->get() as $kategori) {
-                $penawaran[] = [
-                    '@type' => 'Offer',
-                    'name' => $kategori->name,
-                    'price' => (string) (int) $kategori->price,
-                    'priceCurrency' => 'IDR',
-                    'availability' => 'https://schema.org/InStock',
-                    'url' => url('/daftar-akun?kategori='.$kategori->slug),
-                ];
-            }
-        } catch (\Throwable) {
-            $penawaran = [];
-        }
-
+        // CATATAN: properti "offers" SENGAJA tidak dipasang, walau Search Console
+        // menandainya hilang (peringatannya "non-kritis" — tidak menghalangi
+        // hasil kaya). Isinya wajib memuat harga, sedangkan situs ini memang
+        // menyembunyikan biaya dari pengunjung yang belum masuk — aturan yang
+        // dijaga MenuSmokeTest ("harganya juga tidak boleh terselip di sumber
+        // halaman"). Data terstruktur ikut terbaca siapa pun, jadi memasangnya
+        // sama saja membocorkan harga lewat pintu belakang.
         $acara = [
             '@context' => 'https://schema.org',
             '@type' => 'SportsEvent',
@@ -145,10 +131,6 @@
                 'name' => 'Pelari '.$namaAcara,
             ],
         ];
-
-        if ($penawaran) {
-            $acara['offers'] = $penawaran;
-        }
 
         $dataAcara = json_encode($acara, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG);
     }

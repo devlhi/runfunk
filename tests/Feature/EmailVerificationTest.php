@@ -397,4 +397,75 @@ class EmailVerificationTest extends TestCase
 
         $this->actingAs($user)->get('/verifikasi-email')->assertRedirect(route('dashboard'));
     }
+
+    /* --------------------------------- Kegagalan kirim tidak membocorkan SMTP */
+
+    /** Arahkan mailer ke host yang tidak ada supaya pengirimannya pasti gagal. */
+    private function rusakkanSmtp(): void
+    {
+        config([
+            'mail.default' => 'smtp',
+            'mail.mailers.smtp.host' => 'smtp.rahasia-internal.local',
+            'mail.mailers.smtp.port' => 2525,
+            'mail.mailers.smtp.username' => 'noreply@gongfunrun.id',
+        ]);
+    }
+
+    public function test_peserta_tidak_melihat_rincian_server_smtp_saat_kirim_gagal(): void
+    {
+        // Galat transport memuat nama host, porta, dan sering nama pengguna SMTP.
+        // Itu peta infrastruktur surat — tidak boleh sampai ke peserta, padahal
+        // siapa pun yang punya akun bisa menekan "Kirim ulang".
+        $this->rusakkanSmtp();
+        $user = $this->pesertaBelumVerifikasi();
+
+        $pesan = $this->actingAs($user)
+            ->post('/verifikasi-email/kirim-ulang')
+            ->assertRedirect()
+            ->getSession()
+            ->get('error');
+
+        $this->assertNotEmpty($pesan);
+        $this->assertStringNotContainsString('rahasia-internal.local', $pesan);
+        $this->assertStringNotContainsString('2525', $pesan);
+        $this->assertStringNotContainsString('noreply@gongfunrun.id', $pesan);
+    }
+
+    public function test_pengelola_tetap_melihat_rincian_untuk_menyetel_smtp(): void
+    {
+        $this->rusakkanSmtp();
+
+        $dev = User::create([
+            'name' => 'Dev', 'email' => 'dev@example.com',
+            'password' => 'rahasia12345', 'role' => User::ROLE_DEVELOPER,
+            'email_verified_at' => null,
+        ]);
+
+        $pesan = $this->actingAs($dev)
+            ->post('/verifikasi-email/kirim-ulang')
+            ->getSession()
+            ->get('error');
+
+        $this->assertStringContainsString('rahasia-internal.local', $pesan);
+    }
+
+    public function test_kode_verifikasi_tidak_pernah_ikut_ke_tanggapan(): void
+    {
+        // Kodenya dikembalikan service untuk keperluan internal — ia tidak boleh
+        // bocor lewat pesan yang dikirim ke browser.
+        $this->rusakkanSmtp();
+        $user = $this->pesertaBelumVerifikasi();
+
+        $kode = EmailVerificationCode::where('user_id', $user->id)->first();
+
+        $pesan = $this->actingAs($user)
+            ->post('/verifikasi-email/kirim-ulang')
+            ->getSession()
+            ->get('error');
+
+        // Kode tersimpan sebagai hash, jadi yang diperiksa: tidak ada angka
+        // 6 digit yang nyasar di pesan.
+        $this->assertDoesNotMatchRegularExpression('/\b\d{6}\b/', $pesan);
+        $this->assertNotNull(EmailVerificationCode::where('user_id', $user->id)->first());
+    }
 }

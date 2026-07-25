@@ -219,29 +219,44 @@ class IndeksMesinPencariTest extends TestCase
 
     public function test_data_terstruktur_lengkap_untuk_search_console(): void
     {
-        // Search Console menandai tiga kolom hilang: offers, endDate, performer.
-        // Ketiganya kini wajib ada, kalau tidak peringatannya balik lagi.
+        // Search Console menandai endDate & performer hilang. Keduanya kini wajib
+        // ada, kalau tidak peringatannya balik lagi.
         $this->seed(RaceCategorySeeder::class);
 
-        $html = $this->get('/')->getContent();
-        preg_match('#<script type="application/ld\+json">(.*?)</script>#s', $html, $m);
-        $data = json_decode($m[1] ?? '', true);
+        $data = $this->dataTerstrukturBeranda();
 
         $this->assertIsArray($data, 'Data terstruktur beranda bukan JSON yang sah.');
         $this->assertArrayHasKey('endDate', $data);
         $this->assertArrayHasKey('performer', $data);
-        $this->assertArrayHasKey('offers', $data);
 
         // Acara tidak boleh selesai sebelum dimulai.
         $this->assertGreaterThan($data['startDate'], $data['endDate']);
+    }
 
-        // Tiap penawaran wajib punya harga angka murni dan mata uang — tanpa itu
-        // Google tetap menandai "offers" kurang lengkap.
-        $this->assertNotEmpty($data['offers']);
-        foreach ($data['offers'] as $offer) {
-            $this->assertSame('IDR', $offer['priceCurrency']);
-            $this->assertMatchesRegularExpression('/^\d+$/', $offer['price']);
-        }
+    public function test_data_terstruktur_tidak_membocorkan_biaya_ke_tamu(): void
+    {
+        // Properti "offers" wajib memuat harga, sedangkan biaya pendaftaran
+        // memang disembunyikan dari pengunjung yang belum masuk (lihat
+        // MenuSmokeTest). Data terstruktur terbaca siapa pun, jadi memasangnya
+        // sama dengan membocorkan harga lewat pintu belakang — peringatan
+        // "offers" di Search Console sengaja dibiarkan (ia non-kritis).
+        $this->seed(RaceCategorySeeder::class);
+        auth()->logout();
+
+        $data = $this->dataTerstrukturBeranda();
+
+        $this->assertArrayNotHasKey('offers', $data);
+        $this->assertStringNotContainsString('100000', json_encode($data));
+        $this->assertStringNotContainsString('150000', json_encode($data));
+    }
+
+    /** @return array<string, mixed>|null */
+    private function dataTerstrukturBeranda(): ?array
+    {
+        $html = $this->get('/')->getContent();
+        preg_match('#<script type="application/ld\+json">(.*?)</script>#s', $html, $m);
+
+        return json_decode($m[1] ?? '', true);
     }
 
     /* ---------------------------------- Meta per-artikel untuk perayap */

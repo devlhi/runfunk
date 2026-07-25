@@ -43,9 +43,18 @@ class EmailVerificationController extends Controller
 
         $hasil = $this->verifier->terbitkan($request->user());
 
-        return $hasil['terkirim']
-            ? back()->with('success', 'Kode baru sudah dikirim. Cek kotak masuk dan folder spam.')
-            : back()->with('error', $hasil['pesan']);
+        if ($hasil['terkirim']) {
+            return back()->with('success', 'Kode baru sudah dikirim. Cek kotak masuk dan folder spam.');
+        }
+
+        // Keterangan teknisnya hanya untuk pengelola yang memang sedang menyetel
+        // SMTP. Ke peserta cukup pesan umum: galat transport memuat nama host,
+        // porta, dan sering nama pengguna SMTP.
+        $pesan = $request->user()->isStaff() && filled($hasil['detail'])
+            ? $hasil['pesan'].' ('.$hasil['detail'].')'
+            : $hasil['pesan'];
+
+        return back()->with('error', $pesan);
     }
 
     /** Periksa kode yang diketik peserta. */
