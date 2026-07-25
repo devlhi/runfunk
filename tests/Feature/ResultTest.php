@@ -342,4 +342,139 @@ class ResultTest extends TestCase
                 ->where('registration.has_certificate', true)
                 ->where('registration.finish_time', '00:32:10'));
     }
+
+    /* ------------------------------- QR & pemeriksaan keaslian sertifikat */
+
+    private function finisher(): Registration
+    {
+        $r = $this->buatPeserta(['nama' => 'Rian Pelari']);
+        $r->forceFill(['finish_seconds' => 1725, 'rank_overall' => 1, 'rank_gender' => 1])->save();
+
+        return $r;
+    }
+
+    public function test_sertifikat_membawa_qr_menuju_halaman_pemeriksaan(): void
+    {
+        $r = $this->finisher();
+
+        $this->actingAs($this->peserta)
+            ->get("/sertifikat/{$r->id}")
+            ->assertOk()
+            ->assertInertia(fn ($p) => $p
+                ->where('sertifikat.qr', fn ($qr) => str_starts_with((string) $qr, 'data:image/svg+xml;base64,'))
+                ->where('sertifikat.verifikasi_url', fn ($u) => str_contains((string) $u, '/verifikasi-sertifikat/S.')));
+    }
+
+    public function test_siapa_pun_boleh_memeriksa_keaslian_tanpa_masuk(): void
+    {
+        // Yang memeriksa justru orang luar yang menerima sertifikat itu — kalau
+        // harus punya akun dulu, QR-nya kehilangan seluruh gunanya.
+        $r = $this->finisher();
+        $kode = app(\App\Services\QrToken::class)->untukSertifikat($r);
+
+        auth()->logout();
+
+        $this->get("/verifikasi-sertifikat/{$kode}")
+            ->assertOk()
+            ->assertInertia(fn ($p) => $p
+                ->where('sah', true)
+                ->where('sertifikat.nama', 'Rian Pelari')
+                ->where('sertifikat.waktu', '00:28:45'));
+    }
+
+    public function test_halaman_pemeriksaan_tidak_membocorkan_kontak_peserta(): void
+    {
+        $r = $this->finisher();
+        $r->forceFill(['participant_phone' => '081277776666', 'emergency_phone' => '081255554444'])->save();
+
+        auth()->logout();
+
+        $respon = $this->get('/verifikasi-sertifikat/'.app(\App\Services\QrToken::class)->untukSertifikat($r));
+
+        $respon->assertDontSee('081277776666', false);
+        $respon->assertDontSee('081255554444', false);
+        $respon->assertDontSee($r->participant_email, false);
+    }
+
+    public function test_kode_karangan_ditolak(): void
+    {
+        $r = $this->finisher();
+
+        auth()->logout();
+
+        foreach (["S.{$r->id}.000000000000", 'S.999.abcdef123456', 'ngawur'] as $palsu) {
+            $this->get("/verifikasi-sertifikat/{$palsu}")
+                ->assertOk()
+                ->assertInertia(fn ($p) => $p->where('sah', false)->where('sertifikat', null));
+        }
+    }
+
+    public function test_kode_bib_tidak_bisa_dipakai_sebagai_kode_sertifikat(): void
+    {
+        // Tipe token sengaja dipisah: QR sertifikat beredar bebas (dipajang,
+        // dilampirkan ke lamaran kerja), jadi tidak boleh bisa dipakai di pos
+        // race pack — dan sebaliknya.
+        $r = $this->finisher();
+        $token = app(\App\Services\QrToken::class);
+
+        auth()->logout();
+
+        $this->get('/verifikasi-sertifikat/'.$token->untukPeserta($r))
+            ->assertInertia(fn ($p) => $p->where('sah', false));
+
+        $this->assertNull($token->bacaPeserta($token->untukSertifikat($r)));
+    }
+
+    public function test_yang_belum_punya_waktu_finis_tidak_bisa_diverifikasi(): void
+    {
+        $r = $this->buatPeserta();
+        $kode = app(\App\Services\QrToken::class)->untukSertifikat($r);
+
+        auth()->logout();
+
+        $this->get("/verifikasi-sertifikat/{$kode}")
+            ->assertInertia(fn ($p) => $p->where('sah', false));
+    }
+
+    /* ------------------------------------------- Cetak sertifikat massal */
+
+    public function test_lembar_cetak_hanya_memuat_yang_sudah_finis(): void
+    {
+        $finis = $this->finisher();
+        $belum = $this->buatPeserta(['nama' => 'Belum Finis']);
+
+        $this->actingAs($this->panitia)
+            ->get('/panitia/cetak-sertifikat/lembar')
+            ->assertOk()
+            ->assertInertia(fn ($p) => $p
+                ->has('daftar', 1)
+                ->where('daftar.0.nama', 'Rian Pelari'));
+
+        $this->assertNotNull($belum->id);
+        $this->assertNull($belum->finish_seconds);
+    }
+
+    public function test_lembar_cetak_bisa_disaring_per_kategori(): void
+    {
+        $lima = $this->finisher();
+        $sepuluh = $this->buatPeserta(['slug' => '10k', 'nama' => 'Pelari Sepuluh']);
+        $sepuluh->forceFill(['finish_seconds' => 3000])->save();
+
+        $this->actingAs($this->panitia)
+            ->get('/panitia/cetak-sertifikat/lembar?kategori=10k')
+            ->assertInertia(fn ($p) => $p
+                ->has('daftar', 1)
+                ->where('daftar.0.nama', 'Pelari Sepuluh'));
+    }
+
+    public function test_peserta_tidak_boleh_membuka_cetak_massal(): void
+    {
+        $this->actingAs($this->peserta)
+            ->get('/panitia/cetak-sertifikat')
+            ->assertForbidden();
+
+        $this->actingAs($this->peserta)
+            ->get('/panitia/cetak-sertifikat/lembar')
+            ->assertForbidden();
+    }
 }

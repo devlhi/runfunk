@@ -5,11 +5,13 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\CertificateVerifyController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\Panitia\AnnouncementController;
 use App\Http\Controllers\Panitia\BibPrintController;
 use App\Http\Controllers\Panitia\CategoryController;
+use App\Http\Controllers\Panitia\CertificateSheetController;
 use App\Http\Controllers\Panitia\CheckinController;
 use App\Http\Controllers\Panitia\CommitteeCardController;
 use App\Http\Controllers\Panitia\DashboardController as PanitiaDashboard;
@@ -40,6 +42,13 @@ Route::get('sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 
 /* --------------------------------------------------------- Hasil lomba */
 Route::get('hasil', [ResultPublicController::class, 'index'])->name('results.index');
+
+// Pemeriksaan keaslian sertifikat lewat QR yang tercetak di lembarnya. Terbuka
+// tanpa perlu masuk — yang memeriksa justru orang luar yang menerima sertifikat
+// itu. Isinya tidak melebihi papan hasil yang memang sudah publik.
+Route::get('verifikasi-sertifikat/{kode}', [CertificateVerifyController::class, 'show'])
+    ->middleware('throttle:60,1')
+    ->name('certificate.verify');
 
 /* -------------------------------------------------------------- Berita */
 Route::get('berita', [NewsController::class, 'index'])->name('news.index');
@@ -166,6 +175,10 @@ Route::middleware(['jangan-indeks', 'auth', 'panitia'])->prefix('panitia')->name
 
     Route::get('hasil', [ResultController::class, 'index'])->name('results.index');
     Route::post('hasil/{registration}', [ResultController::class, 'store'])->name('results.store');
+
+    // Cetak sertifikat massal — satu halaman A4 lanskap per finisher.
+    Route::get('cetak-sertifikat', [CertificateSheetController::class, 'index'])->name('certificates.index');
+    Route::get('cetak-sertifikat/lembar', [CertificateSheetController::class, 'sheet'])->name('certificates.sheet');
 
     Route::get('laporan', [ReportController::class, 'index'])->name('reports.index');
 

@@ -18,12 +18,21 @@ use App\Models\User;
  *
  *   P.<id>.<tanda tangan>    peserta
  *   K.<id>.<versi>.<tanda tangan>    kartu panitia
+ *   S.<id>.<tanda tangan>    sertifikat
  */
 class QrToken
 {
     private const TIPE_PESERTA = 'P';
 
     private const TIPE_PANITIA = 'K';
+
+    /**
+     * Sertifikat memakai tipe sendiri, bukan menumpang tipe peserta. Kalau
+     * disamakan, QR sertifikat yang memang beredar bebas — dipajang di media
+     * sosial, dilampirkan ke lamaran kerja — bisa dipindai di pos race pack dan
+     * dianggap kartu BIB yang sah.
+     */
+    private const TIPE_SERTIFIKAT = 'S';
 
     /**
      * 12 karakter heksadesimal = 48 bit. Untuk memalsukan, penyerang harus
@@ -52,6 +61,18 @@ class QrToken
     }
 
     /**
+     * Kode untuk QR sertifikat. Berbeda dari kartu panitia, ini TIDAK berversi:
+     * sertifikat yang sudah dicetak dan dibagikan peserta harus tetap bisa
+     * diperiksa bertahun-tahun kemudian.
+     */
+    public function untukSertifikat(Registration $registration): string
+    {
+        $inti = self::TIPE_SERTIFIKAT.'.'.$registration->id;
+
+        return $inti.'.'.$this->tandaTangan($inti);
+    }
+
+    /**
      * Membaca kode hasil pindaian.
      *
      * @return array{tipe: string, id: int, versi: int|null}|null null kalau tidak sah
@@ -64,8 +85,8 @@ class QrToken
 
         $bagian = explode('.', trim($kode));
 
-        // Peserta punya 3 bagian, kartu panitia 4 (ada nomor versinya).
-        if (count($bagian) === 3 && $bagian[0] === self::TIPE_PESERTA) {
+        // Peserta & sertifikat punya 3 bagian, kartu panitia 4 (ada nomor versinya).
+        if (count($bagian) === 3 && in_array($bagian[0], [self::TIPE_PESERTA, self::TIPE_SERTIFIKAT], true)) {
             [$tipe, $id, $tanda] = $bagian;
             $versi = null;
         } elseif (count($bagian) === 4 && $bagian[0] === self::TIPE_PANITIA) {
@@ -95,6 +116,13 @@ class QrToken
         $isi = $this->baca($kode);
 
         return $isi && $isi['tipe'] === self::TIPE_PESERTA ? $isi['id'] : null;
+    }
+
+    public function bacaSertifikat(?string $kode): ?int
+    {
+        $isi = $this->baca($kode);
+
+        return $isi && $isi['tipe'] === self::TIPE_SERTIFIKAT ? $isi['id'] : null;
     }
 
     /** @return array{id: int, versi: int}|null */

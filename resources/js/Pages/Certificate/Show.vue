@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
+import KartuSertifikat from '../../Components/KartuSertifikat.vue';
 
 defineProps({
     sertifikat: { type: Object, required: true },
@@ -23,156 +24,79 @@ function cetak() {
             <Link href="/dashboard" class="kembali">← Kembali ke dashboard</Link>
             <div class="bilah-aksi">
                 <span class="petunjuk">Pilih “Simpan sebagai PDF” di dialog cetak untuk mengunduh.</span>
-                <button type="button" class="btn btn--sm" @click="cetak">🖨 Cetak / Simpan PDF</button>
+                <button type="button" class="cetak-btn" @click="cetak">🖨 Cetak / Simpan PDF</button>
             </div>
         </div>
 
-        <article class="sertifikat">
-            <span class="sudut tl"></span><span class="sudut tr"></span>
-            <span class="sudut bl"></span><span class="sudut br"></span>
+        <div class="panggung">
+            <KartuSertifikat :sertifikat="sertifikat" :acara="acara" pratinjau />
+        </div>
 
-            <header class="s-head">
-                <img class="s-logo" src="/images/logo-ika.jpeg" alt="Logo IKA SMK Gotong Royong Telaga Gorontalo" />
-                <div class="s-org">
-                    <b>IKA SMK Gotong Royong Telaga</b>
-                    <span>Ikatan Keluarga Alumni · Gorontalo</span>
-                </div>
-            </header>
-
-            <p class="s-label">Sertifikat Penghargaan</p>
-            <h1 class="s-acara">{{ acara.nama }}</h1>
-
-            <p class="s-untuk">Diberikan kepada</p>
-            <p class="s-nama">{{ sertifikat.nama }}</p>
-
-            <p class="s-teks">
-                yang telah menyelesaikan kategori <b>{{ sertifikat.kategori }}</b>
-                pada {{ acara.nama }} yang diselenggarakan
-                {{ acara.tanggal }} di {{ acara.lokasi }}.
-            </p>
-
-            <div class="s-angka">
-                <div class="s-item">
-                    <span class="k">Catatan Waktu</span>
-                    <span class="v">{{ sertifikat.waktu }}</span>
-                </div>
-                <div class="s-item">
-                    <span class="k">Nomor BIB</span>
-                    <span class="v">{{ sertifikat.bib }}</span>
-                </div>
-                <div class="s-item">
-                    <span class="k">Peringkat {{ sertifikat.gender }}</span>
-                    <span class="v">#{{ sertifikat.peringkat_gender }}</span>
-                </div>
-                <div class="s-item">
-                    <span class="k">Peringkat Umum</span>
-                    <span class="v">#{{ sertifikat.peringkat }}</span>
-                </div>
-            </div>
-
-            <footer class="s-foot">
-                <div class="s-ttd">
-                    <span class="garis"></span>
-                    <b>Panitia {{ acara.nama }}</b>
-                    <span>IKA SMK Gotong Royong Telaga, Gorontalo</span>
-                </div>
-                <p class="s-kode mono">
-                    Kode verifikasi: {{ sertifikat.kode }}
-                </p>
-            </footer>
-        </article>
+        <p class="catatan no-print">
+            Keaslian sertifikat ini bisa diperiksa siapa pun dengan memindai kode QR di atas,
+            atau membuka <span class="mono">{{ sertifikat.verifikasi_url }}</span>
+        </p>
     </div>
 </template>
 
 <style scoped>
-.halaman { min-height: 100vh; background: #EFECE4; padding: 28px 20px 60px; }
+.halaman {
+    min-height: 100vh;
+    /* Latar toska sangat muda supaya lembar putih sertifikatnya "terangkat",
+       bukan menyatu dengan halaman. */
+    background:
+        radial-gradient(60% 50% at 50% 0%, rgba(15, 118, 110, .10), transparent 70%),
+        #EEF4F3;
+    padding: 28px 20px 60px;
+}
 
 .bilah {
-    max-width: 900px; margin: 0 auto 24px;
+    max-width: 980px; margin: 0 auto 22px;
     display: flex; align-items: center; justify-content: space-between;
     gap: 16px; flex-wrap: wrap;
 }
-.kembali { font-family: 'Space Mono'; font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; color: var(--flame); font-weight: 700; }
-.kembali:hover { color: var(--ink); }
+.kembali {
+    font-family: 'Space Mono', monospace; font-size: .74rem;
+    letter-spacing: .1em; text-transform: uppercase; font-weight: 700;
+    color: #0F766E;
+}
+.kembali:hover { color: #0F172A; }
+
 .bilah-aksi { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.petunjuk { font-size: .78rem; color: var(--ink-soft); }
+.petunjuk { font-size: .78rem; color: #64748B; }
 
-/* Rasio A4 lanskap supaya hasil cetaknya pas satu halaman. */
-.sertifikat {
-    position: relative;
-    max-width: 900px;
-    margin: 0 auto;
-    aspect-ratio: 297 / 210;
-    background: #FFFDF8;
-    border: 3px solid var(--ink);
-    border-radius: 6px;
-    padding: 38px 56px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    box-shadow: 10px 10px 0 var(--ink);
+.cetak-btn {
+    font-weight: 700; font-size: .88rem;
+    padding: .6rem 1.15rem;
+    border: 2px solid #0F172A; border-radius: 50px;
+    background: #0F766E; color: #fff; cursor: pointer;
+    box-shadow: 3px 3px 0 #0F172A;
+    transition: .14s;
+}
+.cetak-btn:hover { background: #115E59; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #0F172A; }
+
+/* Bayangan pekat khas panel: lembarnya terasa benar-benar sehelai kertas. */
+.panggung {
+    max-width: 980px; margin: 0 auto;
+    box-shadow: 10px 10px 0 rgba(15, 118, 110, .22);
 }
 
-.sudut { position: absolute; width: 26px; height: 26px; border: 3px solid var(--flame); }
-.sudut.tl { top: 14px; left: 14px; border-right: none; border-bottom: none; }
-.sudut.tr { top: 14px; right: 14px; border-left: none; border-bottom: none; }
-.sudut.bl { bottom: 14px; left: 14px; border-right: none; border-top: none; }
-.sudut.br { bottom: 14px; right: 14px; border-left: none; border-top: none; }
-
-.s-head { display: flex; align-items: center; gap: .7rem; margin-bottom: 14px; }
-.s-logo { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; }
-.s-org { display: flex; flex-direction: column; text-align: left; }
-.s-org b { font-size: .82rem; }
-.s-org span { font-size: .64rem; color: var(--ink-soft); }
-
-.s-label { font-family: 'Space Mono'; font-size: .68rem; letter-spacing: .3em; text-transform: uppercase; color: var(--ink-soft); }
-.s-acara { font-family: 'Big Shoulders Display'; font-weight: 900; font-size: clamp(1.8rem, 4vw, 2.8rem); text-transform: uppercase; line-height: 1; margin: 4px 0 18px; }
-
-.s-untuk { font-size: .82rem; color: var(--ink-soft); }
-.s-nama {
-    font-family: 'Big Shoulders Display'; font-weight: 900;
-    font-size: clamp(2.2rem, 5.5vw, 3.6rem); line-height: 1;
-    color: var(--flame); margin: 6px 0 14px;
-    border-bottom: 3px solid var(--ink); padding-bottom: 10px;
+.catatan {
+    max-width: 980px; margin: 22px auto 0;
+    font-size: .78rem; line-height: 1.7; color: #64748B; text-align: center;
 }
-
-.s-teks { font-size: .9rem; color: var(--ink-soft); max-width: 56ch; line-height: 1.6; }
-.s-teks b { color: var(--ink); }
-
-.s-angka { display: flex; gap: 34px; flex-wrap: wrap; justify-content: center; margin: 22px 0 auto; }
-.s-item { display: flex; flex-direction: column; gap: 3px; }
-.s-item .k { font-family: 'Space Mono'; font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
-.s-item .v { font-family: 'Space Mono'; font-weight: 700; font-size: 1.3rem; }
-
-.s-foot { width: 100%; display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; }
-.s-ttd { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.s-ttd .garis { width: 180px; border-top: 1.5px solid var(--ink); margin-bottom: 6px; }
-.s-ttd b { font-size: .82rem; }
-.s-ttd span { font-size: .66rem; color: var(--ink-soft); }
-.s-kode { font-size: .6rem; color: var(--ink-soft); letter-spacing: .06em; }
+.catatan .mono { font-family: 'Space Mono', monospace; word-break: break-all; color: #0F766E; }
 
 @media print {
     .no-print { display: none !important; }
     .halaman { background: #fff; padding: 0; }
-    .sertifikat { max-width: none; border-radius: 0; box-shadow: none; border-width: 2px; margin: 0; }
+    .panggung { max-width: none; margin: 0; box-shadow: none; }
     @page { size: A4 landscape; margin: 8mm; }
-
-    /* Tanpa ini browser boleh membuang warna demi menghemat tinta (nilai bawaan
-       "economy"): nama peserta yang oranye tercetak kelabu, empat sudut oranye
-       hilang, dan latar krem jadi putih polos — sertifikatnya kehilangan seluruh
-       identitasnya justru saat dicetak. Aturan yang sama sudah dipakai di kartu
-       BIB dan kartu panitia. */
-    .sertifikat,
-    .sertifikat * {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
 }
 
 @media (max-width: 720px) {
-    .sertifikat { aspect-ratio: auto; padding: 30px 24px; }
-    .s-angka { gap: 20px; }
-    .s-foot { flex-direction: column; align-items: center; gap: 14px; margin-top: 24px; }
+    .halaman { padding: 18px 12px 40px; }
+    .bilah { justify-content: center; text-align: center; }
+    .panggung { box-shadow: 6px 6px 0 rgba(15, 118, 110, .22); }
 }
 </style>

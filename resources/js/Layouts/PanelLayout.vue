@@ -39,6 +39,7 @@ const mainNav = computed(() =>
             { href: '/panitia/kartu-panitia/validasi', label: 'Pindai Kartu Panitia', icon: 'badge' },
             { href: '/panitia/cetak-bib', label: 'Cetak Nomor BIB', icon: 'printer' },
             { href: '/panitia/hasil', label: 'Hasil Lomba', icon: 'trophy' },
+            { href: '/panitia/cetak-sertifikat', label: 'Cetak Sertifikat', icon: 'printer' },
             { href: '/panitia/laporan', label: 'Rekap & Laporan', icon: 'chart' },
             { href: '/panitia/pengumuman', label: 'Pengumuman', icon: 'megaphone' },
             { href: '/panitia/berita', label: 'Kelola Berita', icon: 'news' },
