@@ -267,9 +267,9 @@ onBeforeUnmount(() => {
             <div class="sam-grid">
                 <figure class="sam-foto reveal">
                     <img
-                        src="/images/ketua-ika.webp"
-                        :alt="`${ketua.jabatan} berlari mengenakan jersey ${event.name}`"
-                        width="600" height="1312" loading="lazy"
+                        src="/images/ketua-lari.webp"
+                        :alt="`${ketua.jabatan} sedang berlari`"
+                        width="620" height="775" loading="lazy"
                     />
                     <figcaption>
                         <b v-if="ketua.nama">{{ ketua.nama }}</b>
@@ -649,7 +649,7 @@ onBeforeUnmount(() => {
    atasnya. Posisi 50% 18% menjaga kepala tetap di dalam bingkai. */
 .hero-photo {
   position: absolute; inset: 0 0 0 auto; width: 56%; z-index: 0; pointer-events: none;
-  background-image: url('/images/hero-pelari.jpg');
+  background-image: url('/images/hero-ketua.jpg');
   background-size: cover;
   background-position: 50% 18%;
   background-repeat: no-repeat;

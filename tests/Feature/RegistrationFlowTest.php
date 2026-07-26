@@ -111,7 +111,7 @@ class RegistrationFlowTest extends TestCase
     {
         // Seksinya merujuk berkas ini secara langsung; kalau hilang, yang tampil
         // di halaman depan adalah ikon gambar rusak.
-        $this->assertFileExists(public_path('images/ketua-ika.webp'));
+        $this->assertFileExists(public_path('images/ketua-lari.webp'));
     }
 
     public function test_pengunjung_bisa_membuat_akun_peserta(): void

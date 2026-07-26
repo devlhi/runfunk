@@ -42,7 +42,7 @@
         .'lari santai Gorontalo, pendaftaran fun run Gorontalo';
 
     // Foto pelari dipakai sebagai gambar pratinjau saat tautannya dibagikan.
-    $gambar = asset('images/hero-pelari.jpg');
+    $gambar = asset('images/hero-ketua.jpg');
 
     // Meta halaman = acara secara bawaan. Untuk artikel berita, ditimpa dengan
     // judul, ringkasan, dan sampul artikelnya sendiri. Ini WAJIB di sisi server:
@@ -147,7 +147,7 @@
          diurai — itu yang membuat LCP lambat. Preload + fetchpriority=high
          membuatnya ditemukan langsung di HTML awal dan diunduh paling dulu. --}}
     @if (request()->path() === '/')
-        <link rel="preload" as="image" href="{{ asset('images/hero-pelari.jpg') }}" fetchpriority="high">
+        <link rel="preload" as="image" href="{{ asset('images/hero-ketua.jpg') }}" fetchpriority="high">
     @endif
 
     <title inertia>{{ $judulHalaman }}</title>
