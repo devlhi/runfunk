@@ -69,7 +69,7 @@ class LandingController extends Controller
             ],
             'ketua' => [
                 'nama' => Setting::ambil('chairman_name'),
-                'jabatan' => Setting::ambil('chairman_title') ?: 'Ketua IKA SMK Gotong Royong Telaga',
+                'jabatan' => Setting::ambil('chairman_title') ?: 'Ketua Ikatan Keluarga Alumni SMK Gotong Royong',
                 'pesan' => Setting::sambutanKetua(),
             ],
         ]);

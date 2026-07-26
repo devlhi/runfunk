@@ -88,7 +88,7 @@ class RegistrationFlowTest extends TestCase
         // depan. Yang harus selalu ada: jabatan dan isi sambutannya.
         $this->get('/')->assertInertia(fn ($page) => $page
             ->where('ketua.nama', '')
-            ->where('ketua.jabatan', 'Ketua IKA SMK Gotong Royong Telaga')
+            ->where('ketua.jabatan', 'Ketua Ikatan Keluarga Alumni SMK Gotong Royong')
             ->has('ketua.pesan', 3));
     }
 
