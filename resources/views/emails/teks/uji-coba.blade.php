@@ -10,4 +10,4 @@ Waktu    : {{ $waktu }} WITA
 
 --
 Panitia {{ \App\Models\Setting::ambil('event_name') ?: 'Gong Fun Run 2026' }}
-IKA — Ikatan Keluarga Alumni SMK Gotong Royong Telaga, Gorontalo
+IKA — Ikatan Keluarga Alumni SMK Gotong Royong, Gorontalo

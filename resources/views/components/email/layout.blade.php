@@ -91,7 +91,7 @@
                                         <div style="margin-bottom:2px;">Salam sehat &amp; sampai jumpa di garis start,</div>
                                         <div style="font-weight:800;color:#17131F;font-size:15px;">Panitia {{ $namaAcara }}</div>
                                         <div style="font-size:12px;color:#6B6478;margin-top:2px;">
-                                            IKA &mdash; Ikatan Keluarga Alumni SMK Gotong Royong Telaga
+                                            IKA &mdash; Ikatan Keluarga Alumni SMK Gotong Royong
                                         </div>
                                         <div style="font-size:12px;color:#6B6478;">{{ $lokasi }}</div>
                                     </td>
@@ -107,7 +107,7 @@
                             Email ini dikirim otomatis oleh panel {{ $namaAcara }}.
                             Ada pertanyaan? Balas saja email ini &mdash; panitia akan menjawab.
                             <div style="margin-top:6px;color:#6B6478;">
-                                &copy; {{ now()->year }} IKA SMK Gotong Royong Telaga, Gorontalo.
+                                &copy; {{ now()->year }} IKA SMK Gotong Royong, Gorontalo.
                             </div>
                         </td>
                     </tr>

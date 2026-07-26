@@ -154,10 +154,10 @@ onBeforeUnmount(() => {
         <div class="wrap hero-in">
             <div>
                 <div class="hero-org">
-                    <img src="/images/logo-ika.jpeg" width="640" height="640" alt="Logo Ikatan Keluarga Alumni SMK Gotong Royong Telaga Gorontalo" />
+                    <img src="/images/logo-ika.jpeg" width="640" height="640" alt="Logo Ikatan Keluarga Alumni SMK Gotong Royong Gorontalo" />
                     <span>
                         <b>Diselenggarakan oleh IKA</b>
-                        Ikatan Keluarga Alumni SMK Gotong Royong Telaga, Gorontalo
+                        Ikatan Keluarga Alumni SMK Gotong Royong, Gorontalo
                     </span>
                 </div>
 

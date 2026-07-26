@@ -129,7 +129,7 @@ function logout() {
 
         <aside class="rail" :class="{ 'is-open': drawer }">
             <Link class="rail-head" href="/">
-                <img class="rail-logo" src="/images/logo-ika.jpeg" alt="Logo IKA SMK Gotong Royong Telaga Gorontalo" />
+                <img class="rail-logo" src="/images/logo-ika.jpeg" alt="Logo IKA SMK Gotong Royong Gorontalo" />
                 GONG<span style="color:var(--flame)">/</span>RUN
             </Link>
 

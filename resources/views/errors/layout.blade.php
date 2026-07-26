@@ -64,7 +64,7 @@
         </div>
 
         <div class="kaki">
-            Panitia Gong Fun Run 2026 &middot; IKA SMK Gotong Royong Telaga, Gorontalo
+            Panitia Gong Fun Run 2026 &middot; IKA SMK Gotong Royong, Gorontalo
         </div>
     </main>
 </body>

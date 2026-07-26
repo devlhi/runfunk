@@ -25,7 +25,7 @@ defineProps({
                 <!-- Logo di dalam kartu, bukan melayang di atasnya: merek dan
                      formulir jadi satu kesatuan, bukan dua benda terpisah. -->
                 <Link class="auth-logo" href="/">
-                    <img src="/images/logo-ika.jpeg" alt="Logo IKA SMK Gotong Royong Telaga Gorontalo" />
+                    <img src="/images/logo-ika.jpeg" alt="Logo IKA SMK Gotong Royong Gorontalo" />
                     <span>GONG<i>/</i>RUN</span>
                 </Link>
 

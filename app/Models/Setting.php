@@ -69,7 +69,7 @@ class Setting extends Model
     public const SKEMA_MAIL = ['smtp', 'smtps'];
 
     /** Baris kosong memisahkan paragraf. */
-    private const SAMBUTAN_BAWAAN = "Gong Fun Run 2026 lahir dari niat sederhana: mengumpulkan kembali alumni SMK Gotong Royong Telaga, lalu mengajak siapa saja ikut bergerak bersama.\n\nTidak perlu jago lari. Tidak perlu punya target waktu. Cukup datang, bawa keluarga dan teman, nikmati pagi di Gorontalo sambil sehat bareng.\n\nSampai jumpa di garis start.";
+    private const SAMBUTAN_BAWAAN = "Gong Fun Run 2026 lahir dari niat sederhana: mengumpulkan kembali alumni SMK Gotong Royong, lalu mengajak siapa saja ikut bergerak bersama.\n\nTidak perlu jago lari. Tidak perlu punya target waktu. Cukup datang, bawa keluarga dan teman, nikmati pagi di Gorontalo sambil sehat bareng.\n\nSampai jumpa di garis start.";
 
     /**
      * Sambutan dipecah jadi paragraf untuk ditampilkan di landing page.

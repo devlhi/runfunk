@@ -32,7 +32,7 @@ const sepuluhK = computed(() => props.bib.category === '10K');
 
             <div class="bib-acara">
                 <b>{{ namaAcara }}</b>
-                <span>IKA SMK GOTONG ROYONG TELAGA · GORONTALO</span>
+                <span>IKA SMK GOTONG ROYONG · GORONTALO</span>
             </div>
 
             <span class="bib-kat">{{ bib.category }}</span>

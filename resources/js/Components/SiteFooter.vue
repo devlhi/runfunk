@@ -12,7 +12,7 @@ defineProps({
             <div class="foot-grid">
                 <div class="foot-brand">
                     <Link class="brand" href="/">
-                        <img class="foot-logo" src="/images/logo-ika.jpeg" alt="Logo IKA SMK Gotong Royong Telaga Gorontalo" />
+                        <img class="foot-logo" src="/images/logo-ika.jpeg" alt="Logo IKA SMK Gotong Royong Gorontalo" />
                         GONG<span style="color:var(--flame)">/</span>RUN
                     </Link>
                     <p>
@@ -21,7 +21,7 @@ defineProps({
                         Sabtu, 31 Oktober 2026.
                     </p>
                     <p class="foot-org">
-                        Diselenggarakan oleh <b>IKA — Ikatan Keluarga Alumni SMK Gotong Royong Telaga,
+                        Diselenggarakan oleh <b>IKA — Ikatan Keluarga Alumni SMK Gotong Royong,
                         Gorontalo.</b>
                     </p>
                 </div>
@@ -51,7 +51,7 @@ defineProps({
             </div>
 
             <div class="foot-bot">
-                <span>© 2026 Gong Funrun · IKA SMK Gotong Royong Telaga, Gorontalo</span>
+                <span>© 2026 Gong Funrun · IKA SMK Gotong Royong, Gorontalo</span>
                 <span>Terbuka untuk umum · dijalankan bareng-bareng</span>
             </div>
         </div>

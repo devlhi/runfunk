@@ -40,7 +40,7 @@ const ukuranNama = computed(() => {
             <img class="srt-logo" src="/images/logo-ika.jpeg" alt="" />
             <div class="srt-org">
                 <b>{{ acara.nama }}</b>
-                <span>IKA SMK GOTONG ROYONG TELAGA · GORONTALO</span>
+                <span>IKA SMK GOTONG ROYONG · GORONTALO</span>
             </div>
             <span class="srt-kat">{{ sertifikat.kategori }}</span>
         </header>
@@ -70,7 +70,7 @@ const ukuranNama = computed(() => {
             <div class="srt-ttd">
                 <span class="garis"></span>
                 <b>Panitia {{ acara.nama }}</b>
-                <span class="srt-ttd-sub">IKA SMK Gotong Royong Telaga, Gorontalo</span>
+                <span class="srt-ttd-sub">IKA SMK Gotong Royong, Gorontalo</span>
             </div>
 
             <!-- QR menuju halaman pemeriksaan keaslian. Kode teksnya tetap

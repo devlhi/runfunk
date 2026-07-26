@@ -23,7 +23,7 @@ function logout() {
     <nav class="site-nav">
         <div class="wrap nav-in">
             <Link class="brand" href="/">
-                <img class="brand-logo" src="/images/logo-ika.jpeg" alt="Logo IKA SMK Gotong Royong Telaga Gorontalo" />
+                <img class="brand-logo" src="/images/logo-ika.jpeg" alt="Logo IKA SMK Gotong Royong Gorontalo" />
                 GONG<span style="color:var(--flame)">/</span>RUN
             </Link>
 
