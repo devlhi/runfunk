@@ -81,13 +81,14 @@ class RegistrationFlowTest extends TestCase
 
     /* ------------------------------------------- Sambutan ketua IKA */
 
-    public function test_sambutan_ketua_tampil_tanpa_nama_karangan(): void
+    public function test_sambutan_ketua_tampil_lengkap(): void
     {
-        // Nama sengaja kosong sampai panitia mengisinya sendiri: lebih baik hanya
-        // jabatan yang tampil daripada memasang nama orang yang salah di halaman
-        // depan. Yang harus selalu ada: jabatan dan isi sambutannya.
+        // Nama sempat sengaja dikosongkan supaya yang tampil hanya jabatannya —
+        // lebih baik begitu daripada memasang nama orang yang keliru. Namanya
+        // kini diketahui, jadi ketiganya harus lengkap: nama, jabatan, dan isi
+        // sambutannya.
         $this->get('/')->assertInertia(fn ($page) => $page
-            ->where('ketua.nama', '')
+            ->where('ketua.nama', 'Malik Mahmud')
             ->where('ketua.jabatan', 'Ketua Ikatan Keluarga Alumni SMK Gotong Royong')
             ->has('ketua.pesan', 3));
     }

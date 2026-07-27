@@ -42,7 +42,7 @@ class Setting extends Model
             // Sambutan di landing page. Namanya sengaja kosong dari awal: lebih
             // baik hanya menampilkan jabatan daripada memasang nama orang yang
             // salah di halaman depan.
-            'chairman_name' => ['label' => 'Nama Ketua IKA', 'default' => '', 'type' => 'text'],
+            'chairman_name' => ['label' => 'Nama Ketua IKA', 'default' => 'Malik Mahmud', 'type' => 'text'],
             'chairman_title' => ['label' => 'Jabatan', 'default' => 'Ketua Ikatan Keluarga Alumni SMK Gotong Royong', 'type' => 'text'],
             'chairman_message' => ['label' => 'Isi Sambutan', 'default' => self::SAMBUTAN_BAWAAN, 'type' => 'textarea'],
 
