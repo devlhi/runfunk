@@ -221,42 +221,6 @@ onBeforeUnmount(() => {
         </div>
     </div>
 
-    <section id="doorprize" class="doorprize">
-        <div class="doorprize-sun" aria-hidden="true"></div>
-        <div class="wrap doorprize-in">
-            <div class="doorprize-copy reveal">
-                <div class="prize-kicker"><span>★</span> Banjir Hadiah di Garis Finis</div>
-                <h2>
-                    Total doorprize
-                    <strong>puluhan juta!</strong>
-                </h2>
-                <p>
-                    Selesaikan lari, nikmati hiburan, lalu tunggu nomor bib-mu dipanggil.
-                    Ada <b>hadiah utama sepeda</b> dan beragam doorprize menarik lainnya untuk peserta yang beruntung.
-                </p>
-                <div class="prize-chips" aria-label="Hadiah acara">
-                    <span><i aria-hidden="true">🚲</i> Hadiah Sepeda</span>
-                    <span><i aria-hidden="true">🎁</i> Puluhan Juta Rupiah</span>
-                </div>
-                <small>*Jenis dan jumlah hadiah dapat menyesuaikan dukungan sponsor.</small>
-            </div>
-
-            <figure class="bike-prize reveal">
-                <span class="bike-sticker">Grand Doorprize</span>
-                <img
-                    src="/images/sepeda-doorprize.svg"
-                    width="800" height="500"
-                    alt="Ilustrasi hadiah utama sepeda dan total doorprize puluhan juta rupiah Gong Fun Run 2026"
-                    loading="lazy"
-                />
-                <figcaption>
-                    <span class="bike-number">01</span>
-                    <span><b>Sepeda</b> Hadiah utama untuk peserta beruntung</span>
-                </figcaption>
-            </figure>
-        </div>
-    </section>
-
     <section id="info">
         <div class="wrap">
             <div class="sec-head">
@@ -496,6 +460,15 @@ onBeforeUnmount(() => {
                         <b>Medali Finisher</b>
                         Medali emas berpita hijau bergambar pelari dan panorama Gorontalo.
                         Untuk semua yang menyentuh garis finis, 5K maupun 10K.
+                    </figcaption>
+                </figure>
+
+                <figure class="merch-card merch-card--prize reveal">
+                    <span class="merch-tag merch-tag--flame">Grand Doorprize</span>
+                    <img src="/images/sepeda-doorprize.svg" width="800" height="500" alt="Hadiah utama sepeda dan total doorprize puluhan juta rupiah" loading="lazy" />
+                    <figcaption>
+                        <b>Hadiah Sepeda &amp; Doorprize Puluhan Juta</b>
+                        Pengundian nomor bib di panggung finis untuk peserta beruntung.
                     </figcaption>
                 </figure>
             </div>
@@ -781,78 +754,6 @@ onBeforeUnmount(() => {
    gradien, tepat di bawah ambang keterbacaan. */
 .stat .l { font-family: 'Space Mono'; font-size: .74rem; letter-spacing: .1em; text-transform: uppercase; margin-top: 8px; color: #DCF2EB; }
 
-/* --------------------------------------------------------- Doorprize */
-.doorprize {
-  position: relative; overflow: hidden; padding: 86px 0;
-  background:
-    repeating-linear-gradient(115deg, transparent 0 46px, rgba(255, 255, 255, .035) 46px 48px),
-    var(--ink);
-  color: var(--paper); border-bottom: 2.5px solid var(--ink);
-}
-.doorprize::before {
-  content: ''; position: absolute; width: 440px; height: 440px; right: -160px; top: -220px;
-  border: 70px solid rgba(255, 176, 32, .08); border-radius: 50%;
-}
-.doorprize-sun {
-  position: absolute; left: -110px; bottom: -240px; width: 520px; height: 520px;
-  border-radius: 50%; pointer-events: none;
-  background: repeating-conic-gradient(from 12deg, rgba(255, 74, 28, .15) 0 5deg, transparent 5deg 14deg);
-}
-.doorprize-in {
-  position: relative; z-index: 1; display: grid; grid-template-columns: .8fr 1.2fr;
-  gap: clamp(34px, 6vw, 72px); align-items: center;
-}
-.prize-kicker {
-  display: inline-flex; align-items: center; gap: .55rem; margin-bottom: 18px;
-  font-family: 'Space Mono'; font-weight: 700; font-size: .7rem; letter-spacing: .12em;
-  text-transform: uppercase; color: var(--marigold);
-}
-.prize-kicker span {
-  width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%;
-  background: var(--marigold); color: var(--ink); border: 2px solid var(--paper);
-}
-.doorprize-copy h2 {
-  max-width: 9ch; font-size: clamp(3rem, 7vw, 5.8rem); font-weight: 900; line-height: .86;
-}
-.doorprize-copy h2 strong { display: block; color: var(--flame); font: inherit; }
-.doorprize-copy > p { max-width: 43ch; margin-top: 26px; color: #D7D0E0; font-size: 1.03rem; }
-.doorprize-copy > p b { color: var(--paper); }
-.prize-chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
-.prize-chips span {
-  display: inline-flex; align-items: center; gap: .45rem; padding: .55rem .8rem;
-  border: 1.5px solid rgba(255, 255, 255, .25); border-radius: 50px;
-  background: rgba(255, 255, 255, .07); font-size: .8rem; font-weight: 700;
-}
-.prize-chips i { font-style: normal; }
-.doorprize-copy small { display: block; margin-top: 15px; color: #A79FB4; font-size: .72rem; }
-.bike-prize {
-  position: relative; margin: 0; transform: rotate(1deg); background: #221C2D;
-  border: 2.5px solid var(--paper); border-radius: 20px; box-shadow: 11px 11px 0 var(--flame);
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-.bike-prize:hover { transform: rotate(0) translate(-3px, -3px); box-shadow: 14px 14px 0 var(--marigold); }
-.bike-prize img { display: block; width: 100%; height: auto; border-radius: 17px 17px 0 0; }
-.bike-sticker {
-  position: absolute; z-index: 2; top: -16px; right: 24px; transform: rotate(3deg);
-  padding: .45rem .9rem; border: 2.5px solid var(--ink); background: var(--marigold); color: var(--ink);
-  font-family: 'Space Mono'; font-size: .66rem; font-weight: 700; letter-spacing: .1em;
-  text-transform: uppercase; box-shadow: 4px 4px 0 var(--ink);
-}
-.bike-prize figcaption {
-  display: flex; align-items: center; gap: 15px; padding: 16px 20px;
-  border-top: 2.5px solid var(--paper); background: var(--paper); color: var(--ink);
-  border-radius: 0 0 17px 17px; font-size: .78rem;
-}
-.bike-prize figcaption > span:last-child { display: flex; flex-direction: column; }
-.bike-prize figcaption b {
-  font-family: 'Big Shoulders Display'; font-size: 1.65rem; line-height: 1; text-transform: uppercase;
-}
-.bike-number {
-  flex: none; display: grid; place-items: center; width: 45px; height: 45px; border-radius: 50%;
-  background: var(--flame); color: var(--paper); border: 2.5px solid var(--ink);
-  font-family: 'Space Mono'; font-weight: 700;
-}
-
 /* ----------------------------------------------------------- Facilities */
 .fac-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .fac { background: var(--paper); border: 2.5px solid var(--ink); border-radius: 16px; padding: 26px 24px; transition: .15s; }
@@ -1037,7 +938,7 @@ onBeforeUnmount(() => {
 }
 
 /* -------------------------------------------------- Jersey & medali */
-.merch { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-bottom: 24px; }
+.merch { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-bottom: 24px; }
 .merch-card {
   position: relative; margin: 0; overflow: hidden;
   background: var(--paper); border: 2.5px solid var(--ink); border-radius: 18px;
@@ -1054,6 +955,10 @@ onBeforeUnmount(() => {
   display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: contain;
   background: #fff; border-bottom: 2.5px solid var(--ink);
 }
+.merch-card--prize img {
+  background: #221C2D;
+  object-fit: cover;
+}
 .merch-tag {
   position: absolute; top: 14px; left: 14px; z-index: 2;
   font-family: 'Space Mono'; font-size: .64rem; font-weight: 700;
@@ -1062,6 +967,7 @@ onBeforeUnmount(() => {
   background: var(--flame); color: var(--paper);
 }
 .merch-tag--gold { background: var(--marigold); color: var(--ink); }
+.merch-tag--flame { background: var(--flame); color: var(--paper); }
 .merch-card figcaption { padding: 20px 22px 22px; font-size: .9rem; color: var(--ink-soft); line-height: 1.55; }
 .merch-card figcaption b {
   display: block; font-family: 'Big Shoulders Display'; font-weight: 800;
@@ -1130,8 +1036,6 @@ details .a { padding: 0 24px 22px; color: var(--ink-soft); font-size: .98rem; }
 /* ---------------------------------------------------------- Responsive */
 @media (max-width: 920px) {
   .hero-in { grid-template-columns: 1fr; gap: 38px; }
-  .doorprize-in { grid-template-columns: 1fr; gap: 36px; }
-  .bike-prize { max-width: 580px; margin-inline: auto; }
   /* Peta didahulukan di layar sempit — lebih mudah dipahami daripada daftar. */
   .route-wrap { grid-template-columns: 1fr; gap: 28px; }
   .route-wrap .map-card { order: -1; }
