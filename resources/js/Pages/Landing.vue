@@ -1025,12 +1025,18 @@ onBeforeUnmount(() => {
 .spon--media { font-size: 1.2rem; }
 a.spon:hover { border-color: var(--flame); color: var(--flame); transform: translateY(-2px); }
 /* Mode logo: gambar menempati bingkai yang sama dengan mode teks. */
-.spon-logo { display: block; height: 3.4rem; width: auto; max-width: 200px; object-fit: contain; }
-.spon--utama .spon-logo { height: 4.2rem; max-width: 250px; }
-.spon--media .spon-logo { height: 2.6rem; max-width: 160px; }
-.spon:has(.spon-logo) { display: inline-flex; align-items: center; line-height: 1; padding: .9rem 1.7rem; }
-.spon--utama:has(.spon-logo) { padding: 1rem 2rem; }
-.spon--media:has(.spon-logo) { padding: .7rem 1.3rem; }
+.spon-logo { display: block; height: 10rem; width: auto; max-width: min(600px, 90vw); object-fit: contain; }
+.spon--utama .spon-logo { height: 12.5rem; max-width: min(750px, 90vw); }
+.spon--media .spon-logo { height: 7.5rem; max-width: min(480px, 90vw); }
+.spon:has(.spon-logo) { display: inline-flex; align-items: center; line-height: 1; padding: 1.6rem 2.4rem; }
+.spon--utama:has(.spon-logo) { padding: 1.8rem 2.8rem; }
+.spon--media:has(.spon-logo) { padding: 1.2rem 1.8rem; }
+/* Di layar HP, logo sedikit dikecilkan agar tetap muat dalam satu baris pandang. */
+@media (max-width: 640px) {
+  .spon-logo { height: 7rem; }
+  .spon--utama .spon-logo { height: 8.5rem; }
+  .spon--media .spon-logo { height: 5.5rem; }
+}
 
 /* ----------------------------------------------------------------- FAQ */
 .faq-list { max-width: 820px; margin: 0 auto; }
