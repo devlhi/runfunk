@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Announcement;
 use App\Models\RaceCategory;
 use App\Models\Registration;
+use App\Models\Setting;
 use App\Services\RegistrationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -139,7 +140,16 @@ class RegistrationController extends Controller
                     'created_at' => $p->created_at->format('d M Y H:i'),
                 ]),
             ],
-            'paymentInfo' => config('funrun.payment'),
+            // Rekening yang tampil harus mengikuti Pengaturan Acara panitia.
+            // Setting::ambil sudah jatuh ke nilai config kalau barisnya belum ada,
+            // sama seperti pola batas waktu bayar di RegistrationService.
+            'paymentInfo' => [
+                'bank_name' => Setting::ambil('payment_bank') ?: config('funrun.payment.bank_name'),
+                'bank_account' => Setting::ambil('payment_account') ?: config('funrun.payment.bank_account'),
+                'bank_holder' => Setting::ambil('payment_holder') ?: config('funrun.payment.bank_holder'),
+                'qris_name' => config('funrun.payment.qris_name'),
+                'whatsapp' => Setting::ambil('payment_whatsapp') ?: config('funrun.payment.whatsapp'),
+            ],
         ]);
     }
 

@@ -69,7 +69,9 @@ class LandingController extends Controller
                 'categories' => RaceCategory::where('is_active', true)->count(),
             ],
             'payment' => [
-                'whatsapp' => config('funrun.payment.whatsapp'),
+                // Nomor WA panitia bisa diganti lewat Pengaturan Acara; config
+                // hanya nilai jatuh sebelum pengaturan pernah disimpan.
+                'whatsapp' => Setting::ambil('payment_whatsapp') ?: config('funrun.payment.whatsapp'),
             ],
             'ketua' => [
                 'nama' => Setting::ambil('chairman_name'),
