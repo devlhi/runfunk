@@ -1025,10 +1025,12 @@ onBeforeUnmount(() => {
 .spon--media { font-size: 1.2rem; }
 a.spon:hover { border-color: var(--flame); color: var(--flame); transform: translateY(-2px); }
 /* Mode logo: gambar menempati bingkai yang sama dengan mode teks. */
-.spon-logo { display: block; height: 2.4rem; width: auto; max-width: 150px; object-fit: contain; }
-.spon--utama .spon-logo { height: 3rem; max-width: 190px; }
-.spon--media .spon-logo { height: 1.9rem; max-width: 120px; }
-.spon:has(.spon-logo) { display: inline-flex; align-items: center; line-height: 1; }
+.spon-logo { display: block; height: 3.4rem; width: auto; max-width: 200px; object-fit: contain; }
+.spon--utama .spon-logo { height: 4.2rem; max-width: 250px; }
+.spon--media .spon-logo { height: 2.6rem; max-width: 160px; }
+.spon:has(.spon-logo) { display: inline-flex; align-items: center; line-height: 1; padding: .9rem 1.7rem; }
+.spon--utama:has(.spon-logo) { padding: 1rem 2rem; }
+.spon--media:has(.spon-logo) { padding: .7rem 1.3rem; }
 
 /* ----------------------------------------------------------------- FAQ */
 .faq-list { max-width: 820px; margin: 0 auto; }
