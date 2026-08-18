@@ -90,7 +90,11 @@ function submit() {
     });
 
     if (editing.value) {
-        form.transform(transform).patch(`/panitia/sponsor/${editing.value}`, done);
+        // PHP tidak membaca body multipart pada request PATCH, sehingga saat ada
+        // file logo semua field terlihat kosong. Kirim sebagai POST + _method:PATCH
+        // (spoofing bawaan Laravel) agar route PATCH tetap tercapai.
+        form.transform((d) => ({ ...transform(d), _method: 'PATCH' }))
+            .post(`/panitia/sponsor/${editing.value}`, done);
     } else {
         form.transform(transform).post('/panitia/sponsor', done);
     }
