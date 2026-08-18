@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Sponsor extends Model
 {
@@ -13,10 +14,16 @@ class Sponsor extends Model
 
     public const TIER_MEDIA = 'media';
 
+    public const DISPLAY_LOGO = 'logo';
+
+    public const DISPLAY_TEKS = 'teks';
+
     protected $fillable = [
         'name',
         'tier',
         'website_url',
+        'logo_path',
+        'display_type',
         'note',
         'is_active',
         'sort_order',
@@ -43,6 +50,20 @@ class Sponsor extends Model
     public function tierLabel(): string
     {
         return self::tiers()[$this->tier] ?? $this->tier;
+    }
+
+    /** URL logo yang bisa dipakai <img>, null kalau sponsor belum punya logo. */
+    public function logoUrl(): ?string
+    {
+        return $this->logo_path ? Storage::disk('public')->url($this->logo_path) : null;
+    }
+
+    /** Hapus berkas logo dari disk public; aman dipanggil walau logo tidak ada. */
+    public function deleteLogoFile(): void
+    {
+        if ($this->logo_path) {
+            Storage::disk('public')->delete($this->logo_path);
+        }
     }
 
     /**

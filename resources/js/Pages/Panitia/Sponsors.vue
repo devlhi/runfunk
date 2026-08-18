@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import PanelLayout from '../../Layouts/PanelLayout.vue';
 import Paginasi from '../../Components/Paginasi.vue';
@@ -12,6 +12,9 @@ const props = defineProps({
 
 const editing = ref(null);
 const confirmDelete = ref(null);
+// URL pratinjau untuk berkas yang baru dipilih (object URL) dan logo tersimpan.
+const logoPreview = ref(null);
+const currentLogoUrl = ref(null);
 
 const blank = {
     name: '',
@@ -20,13 +23,25 @@ const blank = {
     note: '',
     is_active: true,
     sort_order: 0,
+    display_type: 'teks',
+    logo: null,
+    remove_logo: false,
 };
 
 const form = useForm({ ...blank });
 
+function resetLogoState() {
+    if (logoPreview.value) URL.revokeObjectURL(logoPreview.value);
+    logoPreview.value = null;
+    currentLogoUrl.value = null;
+    form.logo = null;
+    form.remove_logo = false;
+}
+
 function startCreate() {
     editing.value = null;
     form.clearErrors();
+    resetLogoState();
     form.defaults({ ...blank });
     form.reset();
 }
@@ -34,13 +49,32 @@ function startCreate() {
 function startEdit(sponsor) {
     editing.value = sponsor.id;
     form.clearErrors();
+    resetLogoState();
+    currentLogoUrl.value = sponsor.logo_url;
     form.name = sponsor.name;
     form.tier = sponsor.tier;
     form.website_url = sponsor.website_url ?? '';
     form.note = sponsor.note ?? '';
     form.is_active = sponsor.is_active;
     form.sort_order = sponsor.sort_order;
+    form.display_type = sponsor.display_type ?? 'teks';
 }
+
+function onLogoChange(event) {
+    const file = event.target.files[0];
+    if (logoPreview.value) URL.revokeObjectURL(logoPreview.value);
+    logoPreview.value = file ? URL.createObjectURL(file) : null;
+    form.logo = file ?? null;
+    form.remove_logo = false;
+    form.clearErrors('logo');
+}
+
+// Gambar yang diperlihatkan: berkas baru selalu menang, lalu logo lama.
+const shownLogo = computed(() => {
+    if (logoPreview.value) return logoPreview.value;
+    if (editing.value && currentLogoUrl.value && !form.remove_logo) return currentLogoUrl.value;
+    return null;
+});
 
 function submit() {
     const done = {
@@ -48,12 +82,17 @@ function submit() {
         onSuccess: () => startCreate(),
     };
 
+    const transform = (d) => ({
+        ...d,
+        website_url: d.website_url || null,
+        note: d.note || null,
+        remove_logo: d.remove_logo || null,
+    });
+
     if (editing.value) {
-        form.transform((d) => ({ ...d, website_url: d.website_url || null, note: d.note || null }))
-            .patch(`/panitia/sponsor/${editing.value}`, done);
+        form.transform(transform).patch(`/panitia/sponsor/${editing.value}`, done);
     } else {
-        form.transform((d) => ({ ...d, website_url: d.website_url || null, note: d.note || null }))
-            .post('/panitia/sponsor', done);
+        form.transform(transform).post('/panitia/sponsor', done);
     }
 }
 
@@ -103,12 +142,16 @@ function tierClass(tier) {
                         <tbody>
                             <tr v-for="s in sponsors.data" :key="s.id">
                                 <td>
-                                    <span class="strong">{{ s.name }}</span>
+                                    <div class="spon-id">
+                                        <img v-if="s.logo_url" :src="s.logo_url" :alt="`Logo ${s.name}`" class="spon-thumb" />
+                                        <span class="strong">{{ s.name }}</span>
+                                    </div>
                                     <a
                                         v-if="s.website_url" class="spon-url" :href="s.website_url"
                                         target="_blank" rel="noopener noreferrer"
                                     >{{ s.website_url }}</a>
                                     <span v-if="s.note" class="spon-note">{{ s.note }}</span>
+                                    <span class="spon-mode">{{ s.display_type === 'logo' ? 'Tampil: logo' : 'Tampil: teks' }}</span>
                                 </td>
                                 <td><span :class="tierClass(s.tier)">{{ s.tier_label }}</span></td>
                                 <td class="mono">{{ s.sort_order }}</td>
@@ -168,6 +211,35 @@ function tierClass(tier) {
                         </div>
 
                         <div class="field">
+                            <label>Tampilan di Landing Page <span class="req">*</span></label>
+                            <label class="check">
+                                <input v-model="form.display_type" type="radio" value="teks" />
+                                <span>Teks nama sponsor</span>
+                            </label>
+                            <label class="check">
+                                <input v-model="form.display_type" type="radio" value="logo" />
+                                <span>Logo (gambar yang diunggah)</span>
+                            </label>
+                            <p class="help">Pilih cara sponsor ini ditampilkan di bagian “Didukung Oleh”.</p>
+                        </div>
+
+                        <div v-if="form.display_type === 'logo'" class="field">
+                            <label for="logo">Logo Sponsor</label>
+                            <input
+                                id="logo" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                                class="input" :class="{ 'has-error': form.errors.logo }"
+                                @change="onLogoChange"
+                            />
+                            <p v-if="form.errors.logo" class="error">{{ form.errors.logo }}</p>
+                            <p v-else class="help">PNG, JPG, WEBP, atau SVG · maksimal 2 MB. Disarankan latar transparan.</p>
+                            <img v-if="shownLogo" :src="shownLogo" alt="Pratinjau logo" class="logo-preview" />
+                            <label v-if="editing && currentLogoUrl && !logoPreview" class="check" style="margin-top:8px">
+                                <input v-model="form.remove_logo" type="checkbox" />
+                                <span>Hapus logo lama</span>
+                            </label>
+                        </div>
+
+                        <div class="field">
                             <label for="website_url">Alamat Situs</label>
                             <input
                                 id="website_url" v-model="form.website_url" type="url" class="input"
@@ -218,5 +290,9 @@ function tierClass(tier) {
 <style scoped>
 .spon-url, .spon-note { display: block; font-size: .78rem; color: var(--txt-soft); }
 .spon-url { color: var(--cobalt); word-break: break-all; }
+.spon-mode { display: block; font-size: .72rem; color: var(--txt-soft); margin-top: 2px; }
+.spon-id { display: flex; align-items: center; gap: 8px; }
+.spon-thumb { height: 26px; width: auto; max-width: 90px; object-fit: contain; border-radius: 6px; border: 1.5px solid var(--line); padding: 2px; background: var(--paper); }
+.logo-preview { display: block; margin-top: 10px; max-height: 72px; max-width: 100%; width: auto; object-fit: contain; border: 2px dashed var(--line); border-radius: 10px; padding: 8px; background: var(--paper); }
 .row-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 </style>

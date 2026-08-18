@@ -576,15 +576,23 @@ onBeforeUnmount(() => {
             <div class="sec-tag" style="justify-content:center">Didukung Oleh</div>
             <div class="spon-row">
                 <component
+                    :is="s.website_url ? 'a' : 'span'"
                     v-for="s in sponsors"
                     :key="s.name"
-                    :is="s.website_url ? 'a' : 'span'"
                     :href="s.website_url || undefined"
                     :target="s.website_url ? '_blank' : undefined"
                     :rel="s.website_url ? 'noopener noreferrer' : undefined"
                     class="spon"
                     :class="`spon--${s.tier}`"
-                >{{ s.name }}</component>
+                    :title="s.display_type === 'logo' ? s.name : undefined"
+                >
+                    <img
+                        v-if="s.display_type === 'logo' && s.logo_url"
+                        :src="s.logo_url" :alt="`Logo ${s.name}`" class="spon-logo"
+                        loading="lazy"
+                    >
+                    <template v-else>{{ s.name }}</template>
+                </component>
             </div>
         </div>
     </section>
@@ -1016,6 +1024,11 @@ onBeforeUnmount(() => {
 .spon--utama { font-size: 1.75rem; color: var(--ink); border-color: var(--ink); padding: .8rem 1.8rem; }
 .spon--media { font-size: 1.2rem; }
 a.spon:hover { border-color: var(--flame); color: var(--flame); transform: translateY(-2px); }
+/* Mode logo: gambar menempati bingkai yang sama dengan mode teks. */
+.spon-logo { display: block; height: 2.4rem; width: auto; max-width: 150px; object-fit: contain; }
+.spon--utama .spon-logo { height: 3rem; max-width: 190px; }
+.spon--media .spon-logo { height: 1.9rem; max-width: 120px; }
+.spon:has(.spon-logo) { display: inline-flex; align-items: center; line-height: 1; }
 
 /* ----------------------------------------------------------------- FAQ */
 .faq-list { max-width: 820px; margin: 0 auto; }

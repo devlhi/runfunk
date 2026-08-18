@@ -44,6 +44,10 @@ class LandingController extends Controller
                     'name' => $s->name,
                     'tier' => $s->tier,
                     'website_url' => $s->website_url,
+                    'display_type' => $s->display_type,
+                    // Logo hanya dikirim kalau memang dipilih tampil sebagai logo,
+                    // supaya landing tidak mengangkut berkas yang tak dipakai.
+                    'logo_url' => $s->display_type === Sponsor::DISPLAY_LOGO ? $s->logoUrl() : null,
                 ]),
             // Lima berita terbaru sebagai bukti acaranya benar-benar berjalan.
             // Kalau belum ada berita, bagiannya tidak dirender sama sekali.
